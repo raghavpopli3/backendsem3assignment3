@@ -1,0 +1,2069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusCommerce — Complete E-Commerce Platform</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📦</text></svg>">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .page-view { display: none; }
+    .page-view.active { display: block; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- Top Utility Bar -->
+  <div class="bg-slate-950 text-slate-400 text-[11px] font-medium py-1.5 px-4 border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <span class="inline-flex items-center gap-1.5 text-emerald-400">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Engine Online &bull; GitHub Pages Ready
+        </span>
+        <span class="hidden sm:inline text-slate-600">|</span>
+        <span class="hidden sm:inline text-slate-400">Client State Storage &bull; Real-time Stock Sync</span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <a href="#shop" class="hover:text-white transition flex items-center gap-1 text-indigo-300">
+          <i class="fa-solid fa-store text-[10px]"></i> Customer Shop
+        </a>
+        <a href="#cart" class="hover:text-white transition flex items-center gap-1">
+          <i class="fa-solid fa-cart-shopping text-[10px]"></i> Cart (<span class="cart-pill-count">0</span>)
+        </a>
+        <a href="#track" class="hover:text-white transition flex items-center gap-1">
+          <i class="fa-solid fa-truck-fast text-[10px]"></i> Track Order
+        </a>
+        <a href="#support" class="hover:text-white transition flex items-center gap-1">
+          <i class="fa-solid fa-circle-question text-[10px]"></i> Help
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Navigation Header -->
+  <header class="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-40 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo & Brand -->
+        <a href="#dashboard" class="flex items-center space-x-3 group">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-200">
+            <i class="fa-solid fa-boxes-stacked text-white text-lg"></i>
+          </div>
+          <div>
+            <span class="text-lg font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-200 bg-clip-text text-transparent">NexusCommerce</span>
+            <span class="hidden sm:inline-block text-[10px] uppercase font-bold tracking-widest text-indigo-400 bg-indigo-950/80 px-2 py-0.5 rounded-full ml-1 border border-indigo-800/60">Live</span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Tabs -->
+        <nav class="hidden xl:flex items-center space-x-1" id="desktopNav">
+          <!-- Storefront Links -->
+          <a href="#shop" data-route="shop" class="nav-tab px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors text-indigo-300 hover:text-white hover:bg-slate-800">
+            <i class="fa-solid fa-store mr-1 text-[10px]"></i> Shop
+          </a>
+          <a href="#cart" data-route="cart" class="nav-tab px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors text-indigo-300 hover:text-white hover:bg-slate-800">
+            <i class="fa-solid fa-cart-shopping mr-1 text-[10px]"></i> Cart
+          </a>
+          <a href="#track" data-route="track" class="nav-tab px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors text-indigo-300 hover:text-white hover:bg-slate-800">
+            <i class="fa-solid fa-truck-fast mr-1 text-[10px]"></i> Track
+          </a>
+
+          <div class="h-4 w-px bg-slate-700 mx-1"></div>
+
+          <!-- Management Links -->
+          <a href="#dashboard" data-route="dashboard" class="nav-tab px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors text-slate-300 hover:text-white hover:bg-slate-800">
+            <i class="fa-solid fa-gauge-high mr-1 text-[10px]"></i> Dashboard
+          </a>
+          <a href="#inventory" data-route="inventory" class="nav-tab px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors text-slate-300 hover:text-white hover:bg-slate-800">
+            <i class="fa-solid fa-warehouse mr-1 text-[10px]"></i> Inventory
+          </a>
+          <a href="#orders" data-route="orders" class="nav-tab px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors text-slate-300 hover:text-white hover:bg-slate-800">
+            <i class="fa-solid fa-receipt mr-1 text-[10px]"></i> Orders
+          </a>
+          <a href="#customers" data-route="customers" class="nav-tab px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors text-slate-300 hover:text-white hover:bg-slate-800">
+            <i class="fa-solid fa-users mr-1 text-[10px]"></i> Customers
+          </a>
+          <a href="#returns" data-route="returns" class="nav-tab px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors text-slate-300 hover:text-white hover:bg-slate-800">
+            <i class="fa-solid fa-arrow-rotate-left mr-1 text-[10px]"></i> Returns
+          </a>
+          <a href="#analytics" data-route="analytics" class="nav-tab px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors text-slate-300 hover:text-white hover:bg-slate-800">
+            <i class="fa-solid fa-chart-pie mr-1 text-[10px]"></i> Analytics
+          </a>
+          <a href="#docs" data-route="docs" class="nav-tab px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors text-slate-300 hover:text-white hover:bg-slate-800">
+            <i class="fa-solid fa-code mr-1 text-[10px]"></i> API Docs
+          </a>
+          <a href="#support" data-route="support" class="nav-tab px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors text-slate-300 hover:text-white hover:bg-slate-800">
+            <i class="fa-solid fa-headset mr-1 text-[10px]"></i> Help
+          </a>
+        </nav>
+
+        <!-- Right Side: Reset Sample Data & Cart Badge -->
+        <div class="flex items-center space-x-3">
+          <a href="#cart" class="relative p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors flex items-center gap-1.5 text-xs font-bold">
+            <i class="fa-solid fa-cart-shopping text-sm"></i>
+            <span class="cart-pill-count bg-indigo-500 text-white text-[10px] px-1.5 py-0.2 rounded-full">0</span>
+          </a>
+          <button onclick="resetToSampleData()" title="Reset Sample Database" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors text-xs font-semibold flex items-center gap-1">
+            <i class="fa-solid fa-rotate text-sm"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Subnav Bar -->
+    <div class="xl:hidden flex overflow-x-auto px-4 py-2 space-x-2 border-t border-slate-800 bg-slate-900/95 scrollbar-none text-xs">
+      <a href="#shop" class="whitespace-nowrap px-3 py-1 rounded-md font-semibold text-indigo-300">Shop</a>
+      <a href="#cart" class="whitespace-nowrap px-3 py-1 rounded-md font-semibold text-indigo-300">Cart</a>
+      <a href="#track" class="whitespace-nowrap px-3 py-1 rounded-md font-semibold text-indigo-300">Track</a>
+      <a href="#dashboard" class="whitespace-nowrap px-3 py-1 rounded-md font-medium text-slate-300">Dashboard</a>
+      <a href="#inventory" class="whitespace-nowrap px-3 py-1 rounded-md font-medium text-slate-300">Inventory</a>
+      <a href="#orders" class="whitespace-nowrap px-3 py-1 rounded-md font-medium text-slate-300">Orders</a>
+      <a href="#customers" class="whitespace-nowrap px-3 py-1 rounded-md font-medium text-slate-300">Customers</a>
+      <a href="#returns" class="whitespace-nowrap px-3 py-1 rounded-md font-medium text-slate-300">Returns</a>
+      <a href="#analytics" class="whitespace-nowrap px-3 py-1 rounded-md font-medium text-slate-300">Analytics</a>
+      <a href="#docs" class="whitespace-nowrap px-3 py-1 rounded-md font-medium text-slate-300">API Docs</a>
+      <a href="#support" class="whitespace-nowrap px-3 py-1 rounded-md font-medium text-slate-300">Help</a>
+    </div>
+  </header>
+
+  <!-- Global Toast Notification Center -->
+  <div id="toastContainer" class="fixed top-24 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+  <!-- Page Content Container -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- ================================================================ -->
+    <!-- VIEW 1: SHOP (Customer Storefront) -->
+    <!-- ================================================================ -->
+    <section id="view-shop" class="page-view space-y-8">
+      <div class="bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 rounded-3xl p-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+        <div class="space-y-3 z-10 max-w-xl">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-white/20 text-white backdrop-blur-md">
+            <i class="fa-solid fa-sparkles"></i> Direct-to-Consumer Catalogue
+          </span>
+          <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">Premium Electronics & Gear</h1>
+          <p class="text-indigo-100 text-sm">Browse live inventory. All orders are fulfilled with atomic stock reservations.</p>
+        </div>
+        <div class="z-10 flex flex-col sm:flex-row items-center gap-3">
+          <a href="#cart" class="px-5 py-3 rounded-2xl bg-white text-indigo-700 font-extrabold text-sm shadow-lg hover:bg-indigo-50 transition-all flex items-center gap-2 hover:scale-105">
+            <i class="fa-solid fa-cart-shopping"></i> View Cart (<span class="cart-pill-count">0</span>)
+          </a>
+          <a href="#track" class="px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm backdrop-blur-md transition-all flex items-center gap-2 border border-white/20">
+            <i class="fa-solid fa-truck-fast"></i> Track Package
+          </a>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        <div class="relative flex-1 max-w-md">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+          <input type="text" id="shopSearchInput" oninput="renderShop()" placeholder="Search products..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30">
+        </div>
+        <div id="shopCategoryPills" class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none text-xs font-semibold"></div>
+      </div>
+
+      <div id="shopProductsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- VIEW 2: CART & CHECKOUT -->
+    <!-- ================================================================ -->
+    <section id="view-cart" class="page-view space-y-6">
+      <div>
+        <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight flex items-center gap-2.5">
+          <span class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg"><i class="fa-solid fa-cart-shopping"></i></span>
+          Shopping Cart & Instant Checkout
+        </h1>
+        <p class="text-xs text-slate-500 mt-1">Review items, select customer account, and confirm order with live stock allocation</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-7 space-y-4">
+          <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h2 class="text-base font-bold text-slate-800">Cart Contents</h2>
+              <button onclick="clearCart()" class="text-xs text-slate-400 hover:text-rose-600 font-semibold transition">
+                <i class="fa-solid fa-trash-can mr-1"></i> Clear Cart
+              </button>
+            </div>
+            <div id="cartItemsContainer" class="divide-y divide-slate-100"></div>
+            <div class="pt-4 flex items-center justify-between">
+              <a href="#shop" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-arrow-left text-[10px]"></i> Keep Shopping
+              </a>
+              <div class="text-right">
+                <span class="text-xs text-slate-400 block uppercase font-bold">Subtotal</span>
+                <span id="cartSubtotalText" class="text-2xl font-extrabold text-slate-800 font-mono">$0.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5 space-y-4">
+          <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-5">
+            <h2 class="text-base font-bold text-slate-800 pb-3 border-b border-slate-100 flex items-center gap-2">
+              <i class="fa-solid fa-credit-card text-indigo-600"></i> Checkout & Delivery
+            </h2>
+            <form onsubmit="handleCartCheckout(event)" class="space-y-4 text-xs">
+              <div>
+                <label class="block font-bold text-slate-600 uppercase mb-1">Customer Account *</label>
+                <select id="cartCustomerSelect" required onchange="onCartCustomerChange()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-600 uppercase mb-1">Shipping Address</label>
+                <textarea id="cartShippingAddress" rows="2" placeholder="Destination address..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-600 uppercase mb-1">Payment Method</label>
+                <div class="grid grid-cols-3 gap-2">
+                  <label class="border border-slate-200 rounded-xl p-2.5 text-center cursor-pointer hover:bg-slate-50 has-[:checked]:border-indigo-600 has-[:checked]:bg-indigo-50/50">
+                    <input type="radio" name="cartPayMethod" value="Card" checked class="hidden">
+                    <i class="fa-solid fa-credit-card text-indigo-600 block mb-1"></i>
+                    <span class="font-bold text-[10px]">Card</span>
+                  </label>
+                  <label class="border border-slate-200 rounded-xl p-2.5 text-center cursor-pointer hover:bg-slate-50 has-[:checked]:border-indigo-600 has-[:checked]:bg-indigo-50/50">
+                    <input type="radio" name="cartPayMethod" value="UPI" class="hidden">
+                    <i class="fa-solid fa-mobile-screen-button text-indigo-600 block mb-1"></i>
+                    <span class="font-bold text-[10px]">UPI</span>
+                  </label>
+                  <label class="border border-slate-200 rounded-xl p-2.5 text-center cursor-pointer hover:bg-slate-50 has-[:checked]:border-indigo-600 has-[:checked]:bg-indigo-50/50">
+                    <input type="radio" name="cartPayMethod" value="COD" class="hidden">
+                    <i class="fa-solid fa-hand-holding-dollar text-indigo-600 block mb-1"></i>
+                    <span class="font-bold text-[10px]">COD</span>
+                  </label>
+                </div>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-600 uppercase mb-1">Delivery Notes (Optional)</label>
+                <input type="text" id="cartOrderNotes" placeholder="e.g. Leave with security" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500">
+              </div>
+              <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-2">
+                <div class="flex justify-between text-slate-500"><span>Items Total</span><span id="cartBreakdownSubtotal" class="font-mono font-semibold">$0.00</span></div>
+                <div class="flex justify-between text-slate-500"><span>Standard Shipping</span><span class="font-mono text-emerald-600 font-bold">FREE</span></div>
+                <div class="flex justify-between text-slate-800 font-extrabold text-sm pt-2 border-t border-slate-200"><span>Total Payable</span><span id="cartBreakdownTotal" class="font-mono text-indigo-600 text-base">$0.00</span></div>
+              </div>
+              <button type="submit" id="cartPlaceOrderBtn" class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm shadow-lg transition-all hover:scale-102 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-lock text-xs"></i> Complete Order & Deduct Stock
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- VIEW 3: TRACK PACKAGE -->
+    <!-- ================================================================ -->
+    <section id="view-track" class="page-view space-y-6 max-w-4xl mx-auto">
+      <div class="text-center space-y-2">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl mx-auto"><i class="fa-solid fa-truck-fast"></i></div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">Package Delivery Tracker</h1>
+        <p class="text-xs sm:text-sm text-slate-500">Enter your order ID to check fulfillment timeline and delivery status</p>
+      </div>
+
+      <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-sm">
+        <form onsubmit="handleTrackSubmit(event)" class="flex flex-col sm:flex-row items-center gap-3">
+          <div class="relative flex-1 w-full">
+            <i class="fa-solid fa-hashtag absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            <input type="number" min="1" id="trackOrderIdInput" required placeholder="Enter Order Number (e.g. 1, 2)..." class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono">
+          </div>
+          <button type="submit" class="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold text-sm shadow-md transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-magnifying-glass text-xs"></i> Track Status
+          </button>
+        </form>
+      </div>
+
+      <div id="trackResultBox" class="hidden space-y-6">
+        <div class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm space-y-8">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <div>
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Tracking Reference</span>
+              <h2 id="trackOrderNumText" class="text-xl font-extrabold text-slate-800 font-mono">Order #--</h2>
+            </div>
+            <div class="text-left sm:text-right">
+              <span class="text-xs text-slate-400 block font-medium">Placed on <span id="trackOrderDateText" class="font-bold text-slate-700">--</span></span>
+              <span id="trackStatusBadgeSpan" class="inline-block mt-1"></span>
+            </div>
+          </div>
+
+          <div class="relative py-4">
+            <div class="overflow-hidden h-1.5 mb-8 text-xs flex rounded-full bg-slate-100">
+              <div id="trackProgressBar" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-indigo-600 transition-all duration-700" style="width: 25%"></div>
+            </div>
+            <div class="grid grid-cols-4 gap-2 text-center text-xs">
+              <div id="step-placed" class="space-y-1.5">
+                <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs mx-auto shadow-md"><i class="fa-solid fa-check"></i></div>
+                <p class="font-bold text-slate-800 text-[11px]">Placed</p>
+                <p class="text-[10px] text-slate-400 hidden sm:block">Stock Reserved</p>
+              </div>
+              <div id="step-proc" class="space-y-1.5 opacity-40">
+                <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs mx-auto"><i class="fa-solid fa-box"></i></div>
+                <p class="font-bold text-slate-800 text-[11px]">Processing</p>
+                <p class="text-[10px] text-slate-400 hidden sm:block">Warehouse</p>
+              </div>
+              <div id="step-ship" class="space-y-1.5 opacity-40">
+                <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs mx-auto"><i class="fa-solid fa-truck"></i></div>
+                <p class="font-bold text-slate-800 text-[11px]">Shipped</p>
+                <p class="text-[10px] text-slate-400 hidden sm:block">In Transit</p>
+              </div>
+              <div id="step-delv" class="space-y-1.5 opacity-40">
+                <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs mx-auto"><i class="fa-solid fa-house-chimney"></i></div>
+                <p class="font-bold text-slate-800 text-[11px]">Delivered</p>
+                <p class="text-[10px] text-slate-400 hidden sm:block">Completed</p>
+              </div>
+            </div>
+          </div>
+
+          <div id="trackSpecialBanner" class="hidden rounded-2xl p-4 text-xs font-semibold"></div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-3">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Customer & Delivery Notes</h3>
+            <div id="trackCustDetails" class="text-xs text-slate-700 space-y-1"></div>
+          </div>
+          <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-3">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Package Contents</h3>
+            <div id="trackItemsContainer" class="divide-y divide-slate-100 text-xs"></div>
+            <div class="pt-2 flex justify-between font-bold text-slate-800">
+              <span>Total Paid</span>
+              <span id="trackTotalPaidText" class="font-mono text-indigo-600 text-base">$0.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- VIEW 4: DASHBOARD (Executive Operations) -->
+    <!-- ================================================================ -->
+    <section id="view-dashboard" class="page-view space-y-8">
+      <div class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
+        <div class="space-y-2 z-10">
+          <div class="inline-flex items-center gap-2 bg-indigo-500/20 text-indigo-300 px-3 py-1 rounded-full text-xs font-semibold border border-indigo-400/20">
+            <i class="fa-solid fa-sparkles"></i> Operations & Fulfillment Hub
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">E-Commerce Management Dashboard</h1>
+          <p class="text-slate-300 text-sm max-w-xl">Real-time inventory levels, fulfillment pipelines, low stock alerts, and customer transactions.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3 z-10">
+          <a href="#orders" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-md transition-all">
+            <i class="fa-solid fa-cart-plus"></i> Orders Pipeline
+          </a>
+          <a href="#inventory" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl backdrop-blur-md transition-all border border-white/10">
+            <i class="fa-solid fa-plus"></i> Add Product
+          </a>
+          <a href="#customers" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl backdrop-blur-md transition-all border border-white/10">
+            <i class="fa-solid fa-user-plus"></i> Add Customer
+          </a>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <div class="flex items-center justify-between">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Catalog Products</p>
+            <span class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg"><i class="fa-solid fa-box"></i></span>
+          </div>
+          <div class="mt-4 flex items-baseline justify-between"><h3 id="dashProductsCount" class="text-3xl font-extrabold text-slate-800">--</h3><span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">Live active</span></div>
+          <p class="text-xs text-slate-400 mt-2">Active items in catalog</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <div class="flex items-center justify-between">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Stock Units</p>
+            <span class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg"><i class="fa-solid fa-cubes"></i></span>
+          </div>
+          <div class="mt-4 flex items-baseline justify-between"><h3 id="dashTotalUnits" class="text-3xl font-extrabold text-slate-800">--</h3><span class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">Units</span></div>
+          <p class="text-xs text-slate-400 mt-2">Available warehouse inventory</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <div class="flex items-center justify-between">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Orders</p>
+            <span class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg"><i class="fa-solid fa-bag-shopping"></i></span>
+          </div>
+          <div class="mt-4 flex items-baseline justify-between"><h3 id="dashTotalOrders" class="text-3xl font-extrabold text-slate-800">--</h3><span id="dashTotalRevenue" class="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">$0.00</span></div>
+          <p class="text-xs text-slate-400 mt-2">All-time order volume</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <div class="flex items-center justify-between">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Low Stock Warnings</p>
+            <span class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg"><i class="fa-solid fa-triangle-exclamation"></i></span>
+          </div>
+          <div class="mt-4 flex items-baseline justify-between"><h3 id="dashLowStockCount" class="text-3xl font-extrabold text-amber-600">--</h3><a href="#inventory" class="text-xs font-semibold text-amber-700 hover:underline">Inspect &rarr;</a></div>
+          <p class="text-xs text-slate-400 mt-2">Items below reorder limit (&le;10)</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+            <div><h2 class="text-base font-bold text-slate-800">Inventory Units by Category</h2><p class="text-xs text-slate-400">Physical stock units across categories</p></div>
+            <a href="#analytics" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">Full Analytics &rarr;</a>
+          </div>
+          <div class="h-64 relative"><canvas id="dashCategoryChart"></canvas></div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+              <div><h2 class="text-base font-bold text-slate-800">Orders Status Mix</h2><p class="text-xs text-slate-400">Fulfillment lifecycle state</p></div>
+              <a href="#orders" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">Manage</a>
+            </div>
+            <div class="h-52 relative flex items-center justify-center"><canvas id="dashStatusChart"></canvas></div>
+          </div>
+          <div id="dashStatusBadges" class="grid grid-cols-2 gap-2 pt-4 border-t border-slate-100 text-xs"></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div><h2 class="text-base font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-indigo-600"></i> Recent Orders</h2><p class="text-xs text-slate-400">Latest transactions</p></div>
+            <a href="#orders" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">View All &rarr;</a>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-slate-400 uppercase text-[11px] font-semibold tracking-wider">
+                <tr><th class="py-2.5 px-3 rounded-l-lg">Order ID</th><th class="py-2.5 px-3">Customer</th><th class="py-2.5 px-3">Total</th><th class="py-2.5 px-3">Status</th><th class="py-2.5 px-3 rounded-r-lg text-right">Date</th></tr>
+              </thead>
+              <tbody id="dashRecentOrdersBody" class="divide-y divide-slate-100 text-slate-700 text-xs"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div><h2 class="text-base font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-bell text-amber-500"></i> Reorder Alerts</h2><p class="text-xs text-slate-400">Stock &le; 10 units</p></div>
+            <a href="#inventory" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">Restock</a>
+          </div>
+          <div id="dashLowStockList" class="space-y-3"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- VIEW 5: INVENTORY MANAGER -->
+    <!-- ================================================================ -->
+    <section id="view-inventory" class="page-view space-y-6">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight flex items-center gap-2.5">
+            <span class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg"><i class="fa-solid fa-boxes-stacked"></i></span>
+            Product Inventory Management
+          </h1>
+          <p class="text-xs text-slate-500 mt-1">Live stock levels with atomic updates on orders, cancellations, and returns</p>
+        </div>
+        <button onclick="openModal('modalAddProduct')" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-md transition-all">
+          <i class="fa-solid fa-plus"></i> Add New Product
+        </button>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        <div class="flex flex-1 items-center gap-3">
+          <div class="relative flex-1 max-w-md">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            <input type="text" id="invSearchInput" oninput="renderInventory()" placeholder="Search product name..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30">
+          </div>
+          <select id="invCategoryFilter" onchange="renderInventory()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700"></select>
+        </div>
+        <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-xl self-start md:self-auto text-xs font-semibold">
+          <button onclick="setInvTab('all')" id="inv-tab-all" class="px-3 py-1.5 rounded-lg bg-white text-indigo-600 shadow-sm transition">All</button>
+          <button onclick="setInvTab('in')" id="inv-tab-in" class="px-3 py-1.5 rounded-lg text-slate-600 transition">In Stock</button>
+          <button onclick="setInvTab('low')" id="inv-tab-low" class="px-3 py-1.5 rounded-lg text-slate-600 transition">Low Stock</button>
+          <button onclick="setInvTab('out')" id="inv-tab-out" class="px-3 py-1.5 rounded-lg text-slate-600 transition">Out of Stock</button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50/80 text-slate-400 uppercase text-[11px] font-semibold tracking-wider border-b border-slate-100">
+              <tr>
+                <th class="py-3 px-4">Product Info</th>
+                <th class="py-3 px-4">Category</th>
+                <th class="py-3 px-4">Unit Price</th>
+                <th class="py-3 px-4">Stock Level</th>
+                <th class="py-3 px-4">Status</th>
+                <th class="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryTableBody" class="divide-y divide-slate-100 text-slate-700 text-xs"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- VIEW 6: ORDERS PIPELINE -->
+    <!-- ================================================================ -->
+    <section id="view-orders" class="page-view space-y-6">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight flex items-center gap-2.5">
+            <span class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg"><i class="fa-solid fa-cart-shopping"></i></span>
+            Orders & Fulfillment Pipeline
+          </h1>
+          <p class="text-xs text-slate-500 mt-1">Multi-item order builder, status transitions, and cancellation with inventory restock</p>
+        </div>
+        <button onclick="openModalCreateOrder()" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-md transition-all">
+          <i class="fa-solid fa-cart-plus"></i> Place New Order
+        </button>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200/80 p-3 shadow-sm flex flex-wrap items-center gap-1.5 text-xs font-semibold">
+        <button onclick="setOrderFilter('all')" id="ord-filter-all" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-sm transition">All (<span id="ordersTotalCount">0</span>)</button>
+        <button onclick="setOrderFilter('pending')" id="ord-filter-pending" class="px-3 py-1.5 rounded-lg text-slate-600 transition">Pending</button>
+        <button onclick="setOrderFilter('confirmed')" id="ord-filter-confirmed" class="px-3 py-1.5 rounded-lg text-slate-600 transition">Confirmed</button>
+        <button onclick="setOrderFilter('processing')" id="ord-filter-processing" class="px-3 py-1.5 rounded-lg text-slate-600 transition">Processing</button>
+        <button onclick="setOrderFilter('shipped')" id="ord-filter-shipped" class="px-3 py-1.5 rounded-lg text-slate-600 transition">Shipped</button>
+        <button onclick="setOrderFilter('delivered')" id="ord-filter-delivered" class="px-3 py-1.5 rounded-lg text-slate-600 transition">Delivered</button>
+        <button onclick="setOrderFilter('cancelled')" id="ord-filter-cancelled" class="px-3 py-1.5 rounded-lg text-slate-600 transition">Cancelled</button>
+        <button onclick="setOrderFilter('returned')" id="ord-filter-returned" class="px-3 py-1.5 rounded-lg text-slate-600 transition">Returned</button>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50/80 text-slate-400 uppercase text-[11px] font-semibold tracking-wider border-b border-slate-100">
+              <tr>
+                <th class="py-3 px-4">Order #</th>
+                <th class="py-3 px-4">Customer</th>
+                <th class="py-3 px-4">Total Amount</th>
+                <th class="py-3 px-4">Status</th>
+                <th class="py-3 px-4">Date</th>
+                <th class="py-3 px-4 text-right">Workflow Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody" class="divide-y divide-slate-100 text-slate-700 text-xs"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- VIEW 7: CUSTOMER CRM -->
+    <!-- ================================================================ -->
+    <section id="view-customers" class="page-view space-y-6">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight flex items-center gap-2.5">
+            <span class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg"><i class="fa-solid fa-users"></i></span>
+            Customer Relationship Management
+          </h1>
+          <p class="text-xs text-slate-500 mt-1">Client accounts, contact directories, and lifetime purchasing histories</p>
+        </div>
+        <button onclick="openModal('modalAddCustomer')" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-md transition-all">
+          <i class="fa-solid fa-user-plus"></i> Register Customer
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="md:col-span-3 bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm flex items-center gap-3">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            <input type="text" id="custSearchInput" oninput="renderCustomers()" placeholder="Search by customer name, email, or address..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30">
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm flex items-center justify-between">
+          <div><p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Clients</p><p id="custTotalCount" class="text-2xl font-extrabold text-slate-800">--</p></div>
+          <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg"><i class="fa-solid fa-address-book"></i></div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50/80 text-slate-400 uppercase text-[11px] font-semibold tracking-wider border-b border-slate-100">
+              <tr>
+                <th class="py-3 px-4">Customer Name</th>
+                <th class="py-3 px-4">Contact Info</th>
+                <th class="py-3 px-4">Shipping Address</th>
+                <th class="py-3 px-4">Registered Date</th>
+                <th class="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="customersTableBody" class="divide-y divide-slate-100 text-slate-700 text-xs"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- VIEW 8: RETURNS & RMA -->
+    <!-- ================================================================ -->
+    <section id="view-returns" class="page-view space-y-6">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight flex items-center gap-2.5">
+            <span class="w-9 h-9 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-lg"><i class="fa-solid fa-arrow-rotate-left"></i></span>
+            Returns & RMA Management
+          </h1>
+          <p class="text-xs text-slate-500 mt-1">Process return requests with automatic product inventory restocking on approval</p>
+        </div>
+        <button onclick="openModalCreateReturn()" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-md transition-all">
+          <i class="fa-solid fa-receipt"></i> File Return Request
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex items-center justify-between">
+          <div><p class="text-xs font-bold text-slate-400 uppercase">Pending Approvals</p><p id="countPendingReturns" class="text-2xl font-extrabold text-amber-600 mt-1">--</p></div>
+          <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg"><i class="fa-solid fa-hourglass-half"></i></div>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex items-center justify-between">
+          <div><p class="text-xs font-bold text-slate-400 uppercase">Approved & Restocked</p><p id="countApprovedReturns" class="text-2xl font-extrabold text-emerald-600 mt-1">--</p></div>
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg"><i class="fa-solid fa-boxes-packing"></i></div>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex items-center justify-between">
+          <div><p class="text-xs font-bold text-slate-400 uppercase">Rejected Returns</p><p id="countRejectedReturns" class="text-2xl font-extrabold text-slate-600 mt-1">--</p></div>
+          <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg"><i class="fa-solid fa-circle-xmark"></i></div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50/80 text-slate-400 uppercase text-[11px] font-semibold tracking-wider border-b border-slate-100">
+              <tr>
+                <th class="py-3 px-4">RMA ID</th>
+                <th class="py-3 px-4">Original Order</th>
+                <th class="py-3 px-4">Customer Reason</th>
+                <th class="py-3 px-4">Refund Amount</th>
+                <th class="py-3 px-4">Status</th>
+                <th class="py-3 px-4 text-right">RMA Decision</th>
+              </tr>
+            </thead>
+            <tbody id="returnsTableBody" class="divide-y divide-slate-100 text-slate-700 text-xs"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- VIEW 9: ANALYTICS & VALUATION -->
+    <!-- ================================================================ -->
+    <section id="view-analytics" class="page-view space-y-6">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight flex items-center gap-2.5">
+            <span class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg"><i class="fa-solid fa-chart-pie"></i></span>
+            Inventory Analytics & Category Valuation
+          </h1>
+          <p class="text-xs text-slate-500 mt-1">Multi-field aggregation metrics, portfolio valuation, and reorder alerts</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Warehouse Valuation</p>
+          <h3 id="analyticsTotalValuation" class="text-3xl font-extrabold text-slate-800 mt-2">--</h3>
+          <p class="text-xs text-slate-400 mt-1">Sum of (Price &times; Quantity)</p>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Categories</p>
+          <h3 id="analyticsTotalCategories" class="text-3xl font-extrabold text-indigo-600 mt-2">--</h3>
+          <p class="text-xs text-slate-400 mt-1">Unique product departments</p>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Portfolio Average Unit Price</p>
+          <h3 id="analyticsAvgPrice" class="text-3xl font-extrabold text-emerald-600 mt-2">--</h3>
+          <p class="text-xs text-slate-400 mt-1">Mean listing price</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
+          <div class="mb-4 pb-2 border-b border-slate-100">
+            <h3 class="text-base font-bold text-slate-800">Inventory Valuation by Category ($)</h3>
+            <p class="text-xs text-slate-400">Total capital invested per department</p>
+          </div>
+          <div class="h-64 relative"><canvas id="analyticsValuationChart"></canvas></div>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
+          <div class="mb-4 pb-2 border-b border-slate-100">
+            <h3 class="text-base font-bold text-slate-800">Physical Stock Volume Share</h3>
+            <p class="text-xs text-slate-400">Proportion of physical inventory units</p>
+          </div>
+          <div class="h-64 relative flex items-center justify-center"><canvas id="analyticsVolumeChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
+        <div class="pb-3 border-b border-slate-100">
+          <h2 class="text-base font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-layer-group text-indigo-600"></i> Category Aggregation Summary</h2>
+          <p class="text-xs text-slate-400">Total items, physical stock quantity, avg price, and stock value</p>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 text-slate-400 uppercase text-[11px] font-semibold tracking-wider">
+              <tr><th class="py-3 px-4 rounded-l-lg">Category</th><th class="py-3 px-4">Items</th><th class="py-3 px-4">Quantity</th><th class="py-3 px-4">Average Price</th><th class="py-3 px-4 rounded-r-lg text-right">Total Stock Value</th></tr>
+            </thead>
+            <tbody id="analyticsSummaryTableBody" class="divide-y divide-slate-100 text-slate-700 text-xs"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- VIEW 10: API DOCS & PLAYGROUND -->
+    <!-- ================================================================ -->
+    <section id="view-docs" class="page-view space-y-6">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight flex items-center gap-2.5">
+            <span class="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center text-lg"><i class="fa-solid fa-code"></i></span>
+            Interactive REST API Console
+          </h1>
+          <p class="text-xs text-slate-500 mt-1">Explore and execute test requests directly against simulated endpoints</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-5 space-y-3">
+          <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">API Endpoints</h3>
+            <div class="space-y-2 text-xs">
+              <div onclick="selectDocEndpoint('products')" class="doc-btn p-2.5 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/40 cursor-pointer transition flex items-center justify-between">
+                <div class="flex items-center gap-2"><span class="px-2 py-0.5 rounded font-bold font-mono text-[10px] bg-emerald-100 text-emerald-800">GET</span><span class="font-mono text-slate-700 font-semibold">/products/</span></div>
+                <span class="text-slate-400 text-[11px]">List products</span>
+              </div>
+              <div onclick="selectDocEndpoint('lowstock')" class="doc-btn p-2.5 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/40 cursor-pointer transition flex items-center justify-between">
+                <div class="flex items-center gap-2"><span class="px-2 py-0.5 rounded font-bold font-mono text-[10px] bg-emerald-100 text-emerald-800">GET</span><span class="font-mono text-slate-700 font-semibold">/products/low-stock</span></div>
+                <span class="text-slate-400 text-[11px]">Stock alerts</span>
+              </div>
+              <div onclick="selectDocEndpoint('summary')" class="doc-btn p-2.5 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/40 cursor-pointer transition flex items-center justify-between">
+                <div class="flex items-center gap-2"><span class="px-2 py-0.5 rounded font-bold font-mono text-[10px] bg-emerald-100 text-emerald-800">GET</span><span class="font-mono text-slate-700 font-semibold">/products/summary</span></div>
+                <span class="text-slate-400 text-[11px]">Category aggregates</span>
+              </div>
+              <div onclick="selectDocEndpoint('orders')" class="doc-btn p-2.5 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/40 cursor-pointer transition flex items-center justify-between">
+                <div class="flex items-center gap-2"><span class="px-2 py-0.5 rounded font-bold font-mono text-[10px] bg-emerald-100 text-emerald-800">GET</span><span class="font-mono text-slate-700 font-semibold">/orders/</span></div>
+                <span class="text-slate-400 text-[11px]">All orders</span>
+              </div>
+              <div onclick="selectDocEndpoint('customers')" class="doc-btn p-2.5 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/40 cursor-pointer transition flex items-center justify-between">
+                <div class="flex items-center gap-2"><span class="px-2 py-0.5 rounded font-bold font-mono text-[10px] bg-emerald-100 text-emerald-800">GET</span><span class="font-mono text-slate-700 font-semibold">/customers/</span></div>
+                <span class="text-slate-400 text-[11px]">Customers directory</span>
+              </div>
+              <div onclick="selectDocEndpoint('returns')" class="doc-btn p-2.5 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/40 cursor-pointer transition flex items-center justify-between">
+                <div class="flex items-center gap-2"><span class="px-2 py-0.5 rounded font-bold font-mono text-[10px] bg-emerald-100 text-emerald-800">GET</span><span class="font-mono text-slate-700 font-semibold">/returns/</span></div>
+                <span class="text-slate-400 text-[11px]">RMA returns</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-7 space-y-4">
+          <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div class="flex items-center gap-2">
+                <span id="docActiveMethod" class="px-2.5 py-1 rounded-md font-bold font-mono text-xs bg-emerald-100 text-emerald-800">GET</span>
+                <span id="docActivePath" class="font-mono font-bold text-slate-800 text-sm">/products/</span>
+              </div>
+              <button onclick="executeDocRequest()" id="docSendBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-2">
+                <i class="fa-solid fa-play text-[10px]"></i> Send Request
+              </button>
+            </div>
+            <p id="docActiveDesc" class="text-xs text-slate-500">Fetches all products and current stock quantities.</p>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-500 uppercase tracking-wider">Live Response Payload</span>
+                <span id="docLatency" class="font-mono text-slate-400 text-[11px]">Latency: 12ms</span>
+              </div>
+              <pre id="docResponseOutput" class="bg-slate-900 rounded-2xl p-4 font-mono text-xs text-emerald-400 overflow-x-auto max-h-96 scrollbar-thin">// Click 'Send Request' to test</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- VIEW 11: HELP & FAQ -->
+    <!-- ================================================================ -->
+    <section id="view-support" class="page-view space-y-8 max-w-5xl mx-auto">
+      <div class="text-center space-y-3">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl mx-auto"><i class="fa-solid fa-headset"></i></div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">Customer Support & Knowledge Center</h1>
+        <p class="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto">Need help with orders, tracking, returns, or technical integration? We are here to help.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-7 space-y-4">
+          <h2 class="text-base font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-circle-question text-indigo-600"></i> Frequently Asked Questions</h2>
+          <div class="space-y-3 text-xs">
+            <details class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm" open>
+              <summary class="font-bold text-slate-800 cursor-pointer">How does atomic stock deduction work?</summary>
+              <p class="mt-2 text-slate-600 leading-relaxed">When an order is submitted, available stock is verified for every item. Only if all quantities are available does the order commit and deduct inventory in real time.</p>
+            </details>
+            <details class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm">
+              <summary class="font-bold text-slate-800 cursor-pointer">What happens when an order is cancelled?</summary>
+              <p class="mt-2 text-slate-600 leading-relaxed">Cancelling an order automatically restores all physical stock units back into active inventory.</p>
+            </details>
+            <details class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm">
+              <summary class="font-bold text-slate-800 cursor-pointer">How do returns work?</summary>
+              <p class="mt-2 text-slate-600 leading-relaxed">Returns can be requested on any delivered order. When approved, item quantities are credited back to active stock.</p>
+            </details>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5 space-y-4">
+          <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-4">
+            <h2 class="text-base font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-paper-plane text-indigo-600"></i> Contact Support Desk</h2>
+            <form onsubmit="handleSupportTicket(event)" class="space-y-3.5 text-xs">
+              <div><label class="block font-bold text-slate-600 uppercase mb-1">Your Name *</label><input type="text" id="suppNameInput" required placeholder="Full Name" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></div>
+              <div><label class="block font-bold text-slate-600 uppercase mb-1">Email Address *</label><input type="email" id="suppEmailInput" required placeholder="you@example.com" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></div>
+              <div><label class="block font-bold text-slate-600 uppercase mb-1">Message *</label><textarea id="suppMsgInput" rows="3" required placeholder="How can we help you?" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></textarea></div>
+              <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition-all">Submit Inquiry</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================================================================ -->
+  <!-- MODALS -->
+  <!-- ================================================================ -->
+
+  <!-- Add Product Modal -->
+  <div id="modalAddProduct" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="text-lg font-bold text-slate-800">Add New Product</h3>
+        <button onclick="closeModal('modalAddProduct')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form onsubmit="handleAddProductSubmit(event)" class="space-y-3 text-xs">
+        <div><label class="block font-bold text-slate-600 uppercase mb-1">Product Title *</label><input type="text" id="newProdName" required placeholder="Product Title" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block font-bold text-slate-600 uppercase mb-1">Category</label><input type="text" id="newProdCategory" placeholder="Electronics" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></div>
+          <div><label class="block font-bold text-slate-600 uppercase mb-1">Price ($) *</label><input type="number" step="0.01" min="0" id="newProdPrice" required placeholder="99.99" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></div>
+        </div>
+        <div><label class="block font-bold text-slate-600 uppercase mb-1">Initial Stock Units *</label><input type="number" min="0" id="newProdStock" required value="20" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></div>
+        <div><label class="block font-bold text-slate-600 uppercase mb-1">Description</label><textarea id="newProdDesc" rows="2" placeholder="Description..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></textarea></div>
+        <div class="flex justify-end gap-2 pt-2"><button type="button" onclick="closeModal('modalAddProduct')" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold">Cancel</button><button type="submit" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-md">Create Product</button></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Customer Modal -->
+  <div id="modalAddCustomer" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="text-lg font-bold text-slate-800">Register Customer</h3>
+        <button onclick="closeModal('modalAddCustomer')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form onsubmit="handleAddCustomerSubmit(event)" class="space-y-3 text-xs">
+        <div><label class="block font-bold text-slate-600 uppercase mb-1">Full Name *</label><input type="text" id="newCustName" required placeholder="John Doe" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></div>
+        <div><label class="block font-bold text-slate-600 uppercase mb-1">Email *</label><input type="email" id="newCustEmail" required placeholder="john@example.com" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></div>
+        <div><label class="block font-bold text-slate-600 uppercase mb-1">Phone</label><input type="tel" id="newCustPhone" placeholder="+91 99999 88888" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></div>
+        <div><label class="block font-bold text-slate-600 uppercase mb-1">Shipping Address</label><textarea id="newCustAddress" rows="2" placeholder="Street, City, State..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></textarea></div>
+        <div class="flex justify-end gap-2 pt-2"><button type="button" onclick="closeModal('modalAddCustomer')" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold">Cancel</button><button type="submit" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-md">Register</button></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Order Modal -->
+  <div id="modalCreateOrder" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="text-lg font-bold text-slate-800">Place New Order</h3>
+        <button onclick="closeModal('modalCreateOrder')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form onsubmit="handleModalCreateOrderSubmit(event)" class="space-y-4 text-xs">
+        <div><label class="block font-bold text-slate-600 uppercase mb-1">Customer *</label><select id="modalOrderCustSelect" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></select></div>
+        <div class="space-y-2">
+          <div class="flex items-center justify-between"><label class="block font-bold text-slate-600 uppercase">Items *</label><button type="button" onclick="addModalOrderItemRow()" class="text-indigo-600 hover:text-indigo-800 font-bold text-[11px]">+ Add Item</button></div>
+          <div id="modalOrderItemsRows" class="space-y-2"></div>
+        </div>
+        <div class="p-3 bg-slate-50 rounded-xl flex items-center justify-between"><span class="font-bold text-slate-500 uppercase">Total:</span><span id="modalOrderEstimatedTotal" class="font-extrabold text-indigo-600 text-base font-mono">$0.00</span></div>
+        <div><label class="block font-bold text-slate-600 uppercase mb-1">Notes</label><input type="text" id="modalOrderNotes" placeholder="Order instructions..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></div>
+        <div class="flex justify-end gap-2 pt-2"><button type="button" onclick="closeModal('modalCreateOrder')" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold">Cancel</button><button type="submit" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-md">Confirm Order</button></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Return Modal -->
+  <div id="modalCreateReturn" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="text-lg font-bold text-slate-800">File Return Request</h3>
+        <button onclick="closeModal('modalCreateReturn')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form onsubmit="handleModalCreateReturnSubmit(event)" class="space-y-3 text-xs">
+        <div><label class="block font-bold text-slate-600 uppercase mb-1">Delivered Order *</label><select id="returnDeliveredSelect" required onchange="updateReturnDefaultRefund()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></select></div>
+        <div><label class="block font-bold text-slate-600 uppercase mb-1">Return Reason *</label><textarea id="returnReasonInput" required rows="2" placeholder="Reason for return..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></textarea></div>
+        <div><label class="block font-bold text-slate-600 uppercase mb-1">Refund Amount ($) *</label><input type="number" step="0.01" min="0" id="returnRefundInput" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></div>
+        <div class="flex justify-end gap-2 pt-2"><button type="button" onclick="closeModal('modalCreateReturn')" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold">Cancel</button><button type="submit" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-md">Submit RMA</button></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Order Detail Modal -->
+  <div id="modalViewOrder" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div><h3 id="viewOrderTitle" class="text-lg font-bold text-slate-800">Order #</h3><p id="viewOrderDate" class="text-xs text-slate-400"></p></div>
+        <button onclick="closeModal('modalViewOrder')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div id="viewOrderCustDetails" class="p-3 bg-slate-50 rounded-xl text-xs space-y-1"></div>
+      <div class="border border-slate-100 rounded-xl overflow-hidden">
+        <table class="w-full text-left text-xs"><thead class="bg-slate-50 text-slate-400 uppercase text-[10px]"><tr><th class="py-2 px-3">Item</th><th class="py-2 px-3">Price</th><th class="py-2 px-3">Qty</th><th class="py-2 px-3 text-right">Subtotal</th></tr></thead><tbody id="viewOrderItemsBody" class="divide-y divide-slate-100"></tbody></table>
+      </div>
+      <div class="flex justify-between items-center font-bold text-slate-800 text-sm"><span>Total</span><span id="viewOrderTotalAmount" class="text-indigo-600 font-mono text-base">$0.00</span></div>
+      <div class="flex justify-end pt-2"><button onclick="closeModal('modalViewOrder')" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs">Close</button></div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 mt-auto py-8 text-slate-500 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-6 pb-6 border-b border-slate-100">
+      <div>
+        <div class="flex items-center space-x-2 font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-boxes-stacked text-indigo-600"></i><span>NexusCommerce</span></div>
+        <p class="text-[11px] text-slate-400 leading-relaxed">Full-stack inventory, customer lifecycle, and atomic order fulfillment management platform running on GitHub Pages.</p>
+      </div>
+      <div>
+        <h4 class="font-bold text-slate-800 text-xs uppercase mb-2">Customer Storefront</h4>
+        <div class="flex flex-col space-y-1.5 text-[11px]"><a href="#shop" class="hover:text-indigo-600 transition">Shop Catalogue</a><a href="#cart" class="hover:text-indigo-600 transition">Cart & Checkout</a><a href="#track" class="hover:text-indigo-600 transition">Delivery Tracker</a><a href="#support" class="hover:text-indigo-600 transition">Help & FAQ</a></div>
+      </div>
+      <div>
+        <h4 class="font-bold text-slate-800 text-xs uppercase mb-2">Operations Hub</h4>
+        <div class="flex flex-col space-y-1.5 text-[11px]"><a href="#dashboard" class="hover:text-indigo-600 transition">Dashboard</a><a href="#inventory" class="hover:text-indigo-600 transition">Inventory Manager</a><a href="#orders" class="hover:text-indigo-600 transition">Orders Pipeline</a><a href="#returns" class="hover:text-indigo-600 transition">Returns RMA</a></div>
+      </div>
+      <div>
+        <h4 class="font-bold text-slate-800 text-xs uppercase mb-2">Platform Details</h4>
+        <div class="flex flex-col space-y-1.5 text-[11px]"><a href="#analytics" class="hover:text-indigo-600 transition">Category Valuation</a><a href="#docs" class="hover:text-indigo-600 transition">REST API Playground</a><a href="https://github.com/raghavpopli3/backendsem3assignment3" target="_blank" class="hover:text-indigo-600 transition">GitHub Repository</a></div>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 gap-2">
+      <p>&copy; 2026 NexusCommerce Platform. Raghav Popli.</p>
+      <div class="flex items-center space-x-3"><span>HTML5 / ES6</span><span>&bull;</span><span>Tailwind CSS</span><span>&bull;</span><span>Chart.js</span><span>&bull;</span><span>GitHub Pages</span></div>
+    </div>
+  </footer>
+
+  <!-- ================================================================ -->
+  <!-- APPLICATION CORE LOGIC (Client-Side State Engine & Router) -->
+  <!-- ================================================================ -->
+  <script>
+    // Initial Starter Data
+    const DEFAULT_PRODUCTS = [
+      { id: 1, name: "ProBook Laptop 15", description: "A reliable 15-inch laptop with 16GB RAM and 512GB SSD.", price: 899.99, stock_quantity: 24, category: "Electronics" },
+      { id: 2, name: "SoundWave Wireless Headphones", description: "Over-ear headphones with active noise cancellation and 30h battery.", price: 149.99, stock_quantity: 58, category: "Electronics" },
+      { id: 3, name: "ErgoComfort Desk Chair", description: "Fully adjustable ergonomic chair with lumbar support.", price: 320.00, stock_quantity: 15, category: "Furniture" },
+      { id: 4, name: "Premium Hardcover Notebook", description: "A5 dotted notebook with 240 pages of fountain-pen-friendly paper.", price: 18.50, stock_quantity: 197, category: "Stationery" },
+      { id: 5, name: "HydroKeep Insulated Bottle", description: "1-litre stainless steel bottle, keeps drinks cold for 24 hours.", price: 34.99, stock_quantity: 5, category: "Lifestyle" }
+    ];
+
+    const DEFAULT_CUSTOMERS = [
+      { id: 1, name: "Alice Sharma", email: "alice.sharma@example.com", phone: "+91 98765 43210", address: "12, Lotus Lane, Bengaluru, Karnataka 560001", created_at: "2026-11-20T10:00:00" },
+      { id: 2, name: "Bob Mehta", email: "bob.mehta@example.com", phone: "+91 87654 32109", address: "47, MG Road, Pune, Maharashtra 411001", created_at: "2026-11-21T11:30:00" },
+      { id: 3, name: "Carol D'Souza", email: "carol.dsouza@example.com", phone: "+91 76543 21098", address: "8, Church Street, Mumbai, Maharashtra 400001", created_at: "2026-11-22T09:15:00" }
+    ];
+
+    const DEFAULT_ORDERS = [
+      {
+        id: 1, customer_id: 1, status: "confirmed", total_amount: 955.49, notes: "Please include an invoice.", created_at: "2026-11-22T12:00:00",
+        items: [
+          { product_id: 1, name: "ProBook Laptop 15", quantity: 1, unit_price: 899.99, subtotal: 899.99 },
+          { product_id: 4, name: "Premium Hardcover Notebook", quantity: 3, unit_price: 18.50, subtotal: 55.50 }
+        ]
+      },
+      {
+        id: 2, customer_id: 2, status: "delivered", total_amount: 299.98, notes: "Gift wrapping requested.", created_at: "2026-11-21T14:20:00",
+        items: [
+          { product_id: 2, name: "SoundWave Wireless Headphones", quantity: 2, unit_price: 149.99, subtotal: 299.98 }
+        ]
+      }
+    ];
+
+    const DEFAULT_RETURNS = [
+      { id: 1, order_id: 2, customer_id: 2, reason: "Defective left ear pad", refund_amount: 149.99, status: "pending", created_at: "2026-11-22T15:00:00" }
+    ];
+
+    // Storage Engine Helpers
+    function getStored(key, fallback) {
+      const v = localStorage.getItem('nexus_' + key);
+      return v ? JSON.parse(v) : fallback;
+    }
+    function setStored(key, data) {
+      localStorage.setItem('nexus_' + key, JSON.stringify(data));
+    }
+
+    function initStorage() {
+      if (!localStorage.getItem('nexus_products')) setStored('products', DEFAULT_PRODUCTS);
+      if (!localStorage.getItem('nexus_customers')) setStored('customers', DEFAULT_CUSTOMERS);
+      if (!localStorage.getItem('nexus_orders')) setStored('orders', DEFAULT_ORDERS);
+      if (!localStorage.getItem('nexus_returns')) setStored('returns', DEFAULT_RETURNS);
+      if (!localStorage.getItem('nexus_cart')) setStored('cart', []);
+    }
+
+    function resetToSampleData() {
+      if (confirm('Reset all demo data back to default initial state?')) {
+        setStored('products', DEFAULT_PRODUCTS);
+        setStored('customers', DEFAULT_CUSTOMERS);
+        setStored('orders', DEFAULT_ORDERS);
+        setStored('returns', DEFAULT_RETURNS);
+        setStored('cart', []);
+        showToast('Demo database refreshed to defaults!', 'success');
+        refreshCurrentRoute();
+      }
+    }
+
+    // Toast & Modal System
+    function showToast(message, type = 'success') {
+      const c = document.getElementById('toastContainer');
+      const t = document.createElement('div');
+      let bg = 'bg-emerald-900/90 text-white border-emerald-700';
+      let icon = '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
+      if (type === 'error') { bg = 'bg-rose-900/90 text-white border-rose-700'; icon = '<i class="fa-solid fa-circle-xmark text-rose-400"></i>'; }
+      if (type === 'warning') { bg = 'bg-amber-900/90 text-white border-amber-700'; icon = '<i class="fa-solid fa-triangle-exclamation text-amber-400"></i>'; }
+      t.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl border text-sm font-medium backdrop-blur-md transition-all duration-300 transform translate-y-2 opacity-0 ${bg}`;
+      t.innerHTML = `${icon} <span>${message}</span>`;
+      c.appendChild(t);
+      requestAnimationFrame(() => t.classList.remove('translate-y-2', 'opacity-0'));
+      setTimeout(() => { t.classList.add('opacity-0', 'translate-x-4'); setTimeout(() => t.remove(), 300); }, 4000);
+    }
+
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) { el.classList.remove('hidden'); el.classList.add('flex'); }
+    }
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) { el.classList.add('hidden'); el.classList.remove('flex'); }
+    }
+
+    function updateCartPill() {
+      const cart = getStored('cart', []);
+      const count = cart.reduce((s, i) => s + (i.quantity || 0), 0);
+      document.querySelectorAll('.cart-pill-count').forEach(el => el.textContent = count);
+    }
+
+    // ROUTER
+    let currentRoute = 'dashboard';
+    const validRoutes = ['shop', 'cart', 'track', 'dashboard', 'inventory', 'orders', 'customers', 'returns', 'analytics', 'docs', 'support'];
+
+    function handleHashChange() {
+      const hash = window.location.hash.replace('#', '').trim() || 'dashboard';
+      const cleanRoute = validRoutes.includes(hash) ? hash : 'dashboard';
+      navigateTo(cleanRoute, false);
+    }
+
+    function navigateTo(route, updateHash = true) {
+      currentRoute = route;
+      if (updateHash) window.location.hash = '#' + route;
+
+      document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
+      const activeView = document.getElementById('view-' + route);
+      if (activeView) activeView.classList.add('active');
+
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        if (tab.dataset.route === route) {
+          tab.className = 'nav-tab px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors bg-indigo-600 text-white shadow-sm';
+        } else {
+          tab.className = 'nav-tab px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors text-slate-300 hover:text-white hover:bg-slate-800';
+        }
+      });
+
+      refreshCurrentRoute();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function refreshCurrentRoute() {
+      updateCartPill();
+      if (currentRoute === 'shop') renderShop();
+      else if (currentRoute === 'cart') renderCart();
+      else if (currentRoute === 'dashboard') renderDashboard();
+      else if (currentRoute === 'inventory') renderInventory();
+      else if (currentRoute === 'orders') renderOrders();
+      else if (currentRoute === 'customers') renderCustomers();
+      else if (currentRoute === 'returns') renderReturns();
+      else if (currentRoute === 'analytics') renderAnalytics();
+      else if (currentRoute === 'docs') selectDocEndpoint('products');
+    }
+
+    // ================================================================
+    // VIEW LOGIC: 1. SHOP
+    // ================================================================
+    let shopActiveCat = '';
+    function renderShop() {
+      const prods = getStored('products', []);
+      const cats = [...new Set(prods.map(p => p.category))];
+      const pillsContainer = document.getElementById('shopCategoryPills');
+      pillsContainer.innerHTML = `
+        <button onclick="shopActiveCat=''; renderShop()" class="px-3 py-1 rounded-xl transition ${shopActiveCat === '' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'}">All</button>
+        ${cats.map(c => `<button onclick="shopActiveCat='${c}'; renderShop()" class="px-3 py-1 rounded-xl transition ${shopActiveCat === c ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'}">${c}</button>`).join('')}
+      `;
+
+      const search = (document.getElementById('shopSearchInput').value || '').toLowerCase();
+      const filtered = prods.filter(p => {
+        const mSearch = p.name.toLowerCase().includes(search) || (p.description && p.description.toLowerCase().includes(search));
+        const mCat = !shopActiveCat || p.category === shopActiveCat;
+        return mSearch && mCat;
+      });
+
+      const grid = document.getElementById('shopProductsGrid');
+      if (!filtered.length) {
+        grid.innerHTML = '<div class="col-span-full py-12 text-center text-slate-400">No products found matching filters.</div>';
+        return;
+      }
+
+      grid.innerHTML = filtered.map(p => {
+        const out = p.stock_quantity <= 0;
+        const low = p.stock_quantity > 0 && p.stock_quantity <= 10;
+        let badge = `<span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">In Stock (${p.stock_quantity})</span>`;
+        if (out) badge = `<span class="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md">Sold Out</span>`;
+        else if (low) badge = `<span class="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">Only ${p.stock_quantity} Left</span>`;
+
+        return `
+          <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+            <div>
+              <div class="w-full h-32 bg-gradient-to-tr from-slate-50 to-indigo-50/60 rounded-2xl flex items-center justify-center text-4xl text-indigo-500/70 mb-4 group-hover:scale-102 transition-transform">
+                <i class="fa-solid fa-box-open"></i>
+              </div>
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full">${p.category}</span>
+                ${badge}
+              </div>
+              <h3 class="font-bold text-slate-800 text-sm leading-snug">${p.name}</h3>
+              <p class="text-xs text-slate-400 mt-1 line-clamp-2">${p.description || 'Verified catalog item.'}</p>
+            </div>
+            <div class="pt-4 mt-3 border-t border-slate-100 flex items-center justify-between">
+              <div>
+                <span class="text-[10px] text-slate-400 uppercase font-bold block">Price</span>
+                <span class="text-lg font-extrabold text-slate-800 font-mono">$${p.price.toFixed(2)}</span>
+              </div>
+              <button onclick="addToCart(${p.id})" ${out ? 'disabled' : ''} class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm ${out ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 text-white hover:scale-105 active:scale-95'}">
+                <i class="fa-solid fa-cart-plus"></i> Add
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function addToCart(prodId) {
+      const prods = getStored('products', []);
+      const p = prods.find(item => item.id === prodId);
+      if (!p) return;
+
+      let cart = getStored('cart', []);
+      const ex = cart.find(item => item.product_id === prodId);
+
+      if (ex) {
+        if (ex.quantity >= p.stock_quantity) {
+          showToast(`Limit reached. Available stock is ${p.stock_quantity} units.`, 'warning');
+          return;
+        }
+        ex.quantity += 1;
+      } else {
+        cart.push({ product_id: p.id, name: p.name, price: p.price, quantity: 1, maxStock: p.stock_quantity });
+      }
+
+      setStored('cart', cart);
+      updateCartPill();
+      showToast(`Added "${p.name}" to cart!`, 'success');
+    }
+
+    // ================================================================
+    // VIEW LOGIC: 2. CART & CHECKOUT
+    // ================================================================
+    function renderCart() {
+      const cart = getStored('cart', []);
+      const container = document.getElementById('cartItemsContainer');
+      const placeBtn = document.getElementById('cartPlaceOrderBtn');
+
+      // Populate customer select
+      const custs = getStored('customers', []);
+      const custSelect = document.getElementById('cartCustomerSelect');
+      custSelect.innerHTML = '<option value="">Choose an active customer...</option>' + 
+        custs.map(c => `<option value="${c.id}">${c.name} (${c.email})</option>`).join('');
+
+      if (!cart.length) {
+        container.innerHTML = `
+          <div class="py-12 text-center space-y-3">
+            <div class="w-14 h-14 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mx-auto"><i class="fa-solid fa-basket-shopping"></i></div>
+            <p class="text-sm font-semibold text-slate-600">Your shopping cart is currently empty</p>
+            <a href="#shop" class="inline-block px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-sm hover:bg-indigo-700">Start Shopping</a>
+          </div>
+        `;
+        document.getElementById('cartSubtotalText').textContent = '$0.00';
+        document.getElementById('cartBreakdownSubtotal').textContent = '$0.00';
+        document.getElementById('cartBreakdownTotal').textContent = '$0.00';
+        placeBtn.disabled = true;
+        placeBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        return;
+      }
+
+      placeBtn.disabled = false;
+      placeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+      let subtotal = 0;
+      container.innerHTML = cart.map(item => {
+        const line = item.price * item.quantity;
+        subtotal += line;
+        return `
+          <div class="py-4 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-slate-100 text-indigo-600 flex items-center justify-center text-sm"><i class="fa-solid fa-box"></i></div>
+              <div><h4 class="font-bold text-slate-800 text-xs">${item.name}</h4><span class="text-slate-400 font-mono text-[11px]">$${item.price.toFixed(2)} each</span></div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="flex items-center border border-slate-200 rounded-xl overflow-hidden text-xs">
+                <button onclick="changeCartQty(${item.product_id}, -1)" class="px-2.5 py-0.5 text-slate-500 hover:bg-slate-100">-</button>
+                <span class="px-2.5 py-0.5 font-bold font-mono">${item.quantity}</span>
+                <button onclick="changeCartQty(${item.product_id}, 1)" class="px-2.5 py-0.5 text-slate-500 hover:bg-slate-100">+</button>
+              </div>
+              <span class="font-mono font-bold text-slate-800 text-xs w-16 text-right">$${line.toFixed(2)}</span>
+              <button onclick="removeCartItem(${item.product_id})" class="text-slate-300 hover:text-rose-500 p-1"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const fmt = '$' + subtotal.toFixed(2);
+      document.getElementById('cartSubtotalText').textContent = fmt;
+      document.getElementById('cartBreakdownSubtotal').textContent = fmt;
+      document.getElementById('cartBreakdownTotal').textContent = fmt;
+    }
+
+    function onCartCustomerChange() {
+      const id = parseInt(document.getElementById('cartCustomerSelect').value, 10);
+      const custs = getStored('customers', []);
+      const found = custs.find(c => c.id === id);
+      if (found && found.address) document.getElementById('cartShippingAddress').value = found.address;
+    }
+
+    function changeCartQty(id, delta) {
+      let cart = getStored('cart', []);
+      const item = cart.find(i => i.product_id === id);
+      if (!item) return;
+      item.quantity += delta;
+      if (item.quantity <= 0) cart = cart.filter(i => i.product_id !== id);
+      setStored('cart', cart);
+      updateCartPill();
+      renderCart();
+    }
+
+    function removeCartItem(id) {
+      let cart = getStored('cart', []).filter(i => i.product_id !== id);
+      setStored('cart', cart);
+      updateCartPill();
+      renderCart();
+    }
+
+    function clearCart() {
+      setStored('cart', []);
+      updateCartPill();
+      renderCart();
+    }
+
+    function handleCartCheckout(e) {
+      e.preventDefault();
+      const cart = getStored('cart', []);
+      if (!cart.length) return;
+
+      const custId = parseInt(document.getElementById('cartCustomerSelect').value, 10);
+      const address = document.getElementById('cartShippingAddress').value;
+      const notes = document.getElementById('cartOrderNotes').value;
+
+      let prods = getStored('products', []);
+
+      // 1. ATOMIC VALIDATION
+      for (const item of cart) {
+        const p = prods.find(x => x.id === item.product_id);
+        if (!p) { showToast(`Product #${item.product_id} no longer available.`, 'error'); return; }
+        if (p.stock_quantity < item.quantity) {
+          showToast(`Insufficient stock for "${p.name}". Available: ${p.stock_quantity}`, 'error');
+          return;
+        }
+      }
+
+      // 2. ATOMIC STOCK DEDUCTION
+      let totalAmount = 0;
+      const orderItems = [];
+      for (const item of cart) {
+        const p = prods.find(x => x.id === item.product_id);
+        p.stock_quantity -= item.quantity;
+        const line = p.price * item.quantity;
+        totalAmount += line;
+        orderItems.push({
+          product_id: p.id,
+          name: p.name,
+          quantity: item.quantity,
+          unit_price: p.price,
+          subtotal: line
+        });
+      }
+      setStored('products', prods);
+
+      // 3. PERSIST ORDER
+      let orders = getStored('orders', []);
+      const newOrderId = orders.length ? Math.max(...orders.map(o => o.id)) + 1 : 1;
+      const newOrder = {
+        id: newOrderId,
+        customer_id: custId,
+        status: "confirmed",
+        total_amount: Math.round(totalAmount * 100) / 100,
+        notes: notes ? `${notes} (Deliver to: ${address})` : `Deliver to: ${address}`,
+        created_at: new Date().toISOString(),
+        items: orderItems
+      };
+      orders.unshift(newOrder);
+      setStored('orders', orders);
+
+      // Clear cart
+      setStored('cart', []);
+      updateCartPill();
+
+      showToast(`Order #${newOrderId} placed successfully! Stock deducted.`, 'success');
+      document.getElementById('trackOrderIdInput').value = newOrderId;
+      navigateTo('track');
+      searchTrackOrder(newOrderId);
+    }
+
+    // ================================================================
+    // VIEW LOGIC: 3. TRACK PACKAGE
+    // ================================================================
+    function handleTrackSubmit(e) {
+      e.preventDefault();
+      const id = parseInt(document.getElementById('trackOrderIdInput').value, 10);
+      searchTrackOrder(id);
+    }
+
+    function searchTrackOrder(orderId) {
+      const orders = getStored('orders', []);
+      const o = orders.find(x => x.id === orderId);
+      if (!o) { showToast(`Order #${orderId} not found.`, 'error'); return; }
+
+      document.getElementById('trackResultBox').classList.remove('hidden');
+      document.getElementById('trackOrderNumText').textContent = `Order #${o.id}`;
+      document.getElementById('trackOrderDateText').textContent = new Date(o.created_at).toLocaleDateString();
+
+      const stMap = {
+        pending: { label: 'Placed', color: 'bg-amber-100 text-amber-700', step: 1, pct: '15%' },
+        confirmed: { label: 'Confirmed', color: 'bg-blue-100 text-blue-700', step: 1, pct: '30%' },
+        processing: { label: 'Processing', color: 'bg-purple-100 text-purple-700', step: 2, pct: '55%' },
+        shipped: { label: 'In Transit', color: 'bg-cyan-100 text-cyan-700', step: 3, pct: '80%' },
+        delivered: { label: 'Delivered', color: 'bg-emerald-100 text-emerald-700', step: 4, pct: '100%' },
+        cancelled: { label: 'Cancelled', color: 'bg-rose-100 text-rose-700', step: 0, pct: '0%' },
+        returned: { label: 'Returned', color: 'bg-slate-100 text-slate-700', step: 0, pct: '0%' }
+      };
+
+      const s = stMap[o.status] || { label: o.status, color: 'bg-slate-100', step: 1, pct: '20%' };
+      document.getElementById('trackStatusBadgeSpan').innerHTML = `<span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${s.color}">${s.label}</span>`;
+      document.getElementById('trackProgressBar').style.width = s.pct;
+
+      // Special alert banner
+      const banner = document.getElementById('trackSpecialBanner');
+      if (o.status === 'cancelled') {
+        banner.className = 'rounded-2xl p-4 text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-800 flex items-center gap-2';
+        banner.innerHTML = '<i class="fa-solid fa-ban text-rose-600 text-base"></i> <span>Order cancelled. Reserved inventory was restored to active catalogue.</span>';
+        banner.classList.remove('hidden');
+      } else if (o.status === 'returned') {
+        banner.className = 'rounded-2xl p-4 text-xs font-semibold bg-slate-100 border border-slate-300 text-slate-800 flex items-center gap-2';
+        banner.innerHTML = '<i class="fa-solid fa-arrow-rotate-left text-slate-600 text-base"></i> <span>A return was approved for this order. Stock has been credited back.</span>';
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+
+      // Customer
+      const custs = getStored('customers', []);
+      const c = custs.find(x => x.id === o.customer_id);
+      document.getElementById('trackCustDetails').innerHTML = c ? `
+        <div class="font-bold text-slate-800">${c.name}</div>
+        <div class="text-slate-500">${c.email} &bull; ${c.phone || 'No phone'}</div>
+        <div class="mt-2 text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100 font-mono text-[11px]">${o.notes || c.address || 'Standard Delivery'}</div>
+      ` : `Customer #${o.customer_id}`;
+
+      // Items
+      document.getElementById('trackItemsContainer').innerHTML = (o.items || []).map(i => `
+        <div class="py-2.5 flex items-center justify-between">
+          <div><span class="font-bold text-slate-800">${i.name}</span><span class="text-slate-400 block text-[11px]">Qty: ${i.quantity} &times; $${i.unit_price.toFixed(2)}</span></div>
+          <span class="font-mono font-bold text-slate-800">$${i.subtotal.toFixed(2)}</span>
+        </div>
+      `).join('');
+
+      document.getElementById('trackTotalPaidText').textContent = `$${o.total_amount.toFixed(2)}`;
+    }
+
+    // ================================================================
+    // VIEW LOGIC: 4. DASHBOARD
+    // ================================================================
+    let dashCatChart = null;
+    let dashStatChart = null;
+
+    function renderDashboard() {
+      const prods = getStored('products', []);
+      const orders = getStored('orders', []);
+
+      document.getElementById('dashProductsCount').textContent = prods.length;
+      const totalUnits = prods.reduce((s, p) => s + (p.stock_quantity || 0), 0);
+      document.getElementById('dashTotalUnits').textContent = totalUnits.toLocaleString();
+      document.getElementById('dashTotalOrders').textContent = orders.length;
+
+      const totalRevenue = orders.reduce((s, o) => s + (o.total_amount || 0), 0);
+      document.getElementById('dashTotalRevenue').textContent = '$' + totalRevenue.toFixed(2);
+
+      const lowStock = prods.filter(p => p.stock_quantity <= 10);
+      document.getElementById('dashLowStockCount').textContent = lowStock.length;
+
+      // Category Chart
+      const catCounts = {};
+      prods.forEach(p => { catCounts[p.category] = (catCounts[p.category] || 0) + p.stock_quantity; });
+      const catLabels = Object.keys(catCounts);
+      const catData = Object.values(catCounts);
+
+      const ctx1 = document.getElementById('dashCategoryChart').getContext('2d');
+      if (dashCatChart) dashCatChart.destroy();
+      dashCatChart = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+          labels: catLabels,
+          datasets: [{ data: catData, backgroundColor: '#6366F1', borderRadius: 8 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#F1F5F9' } }, x: { grid: { display: false } } } }
+      });
+
+      // Status Chart
+      const statusCounts = {};
+      orders.forEach(o => { statusCounts[o.status] = (statusCounts[o.status] || 0) + 1; });
+      const statLabels = Object.keys(statusCounts);
+      const statData = Object.values(statusCounts);
+      const colors = { pending: '#F59E0B', confirmed: '#3B82F6', processing: '#8B5CF6', shipped: '#06B6D4', delivered: '#10B981', cancelled: '#EF4444', returned: '#64748B' };
+
+      const ctx2 = document.getElementById('dashStatusChart').getContext('2d');
+      if (dashStatChart) dashStatChart.destroy();
+      dashStatChart = new Chart(ctx2, {
+        type: 'doughnut',
+        data: { labels: statLabels, datasets: [{ data: statData.length ? statData : [1], backgroundColor: statLabels.map(l => colors[l] || '#94A3B8'), borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '70%' }
+      });
+
+      document.getElementById('dashStatusBadges').innerHTML = statLabels.map(st => `
+        <div class="flex items-center justify-between p-1.5 bg-slate-50 rounded-lg">
+          <span class="capitalize text-slate-600 flex items-center gap-1.5 font-medium"><span class="w-2 h-2 rounded-full" style="background-color: ${colors[st] || '#94A3B8'}"></span>${st}</span>
+          <span class="font-bold text-slate-800">${statusCounts[st]}</span>
+        </div>
+      `).join('');
+
+      // Recent Orders
+      const custs = getStored('customers', []);
+      const tbody = document.getElementById('dashRecentOrdersBody');
+      tbody.innerHTML = orders.slice(0, 5).map(o => {
+        const c = custs.find(x => x.id === o.customer_id);
+        return `
+          <tr class="hover:bg-slate-50">
+            <td class="py-2 px-3 font-mono font-bold text-indigo-600">#${o.id}</td>
+            <td class="py-2 px-3 font-semibold text-slate-800">${c ? c.name : 'Cust #' + o.customer_id}</td>
+            <td class="py-2 px-3 font-bold text-slate-800 font-mono">$${o.total_amount.toFixed(2)}</td>
+            <td class="py-2 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700">${o.status}</span></td>
+            <td class="py-2 px-3 text-right text-slate-400 font-mono text-[11px]">${new Date(o.created_at).toLocaleDateString()}</td>
+          </tr>
+        `;
+      }).join('');
+
+      // Low Stock
+      document.getElementById('dashLowStockList').innerHTML = lowStock.slice(0, 5).map(p => `
+        <div class="p-3 bg-amber-50/60 border border-amber-200/80 rounded-xl flex items-center justify-between">
+          <div><h4 class="font-bold text-slate-800 text-xs">${p.name}</h4><span class="text-[11px] text-slate-500">${p.category} &bull; $${p.price.toFixed(2)}</span></div>
+          <span class="px-2 py-0.5 bg-rose-500 text-white rounded-md text-xs font-bold font-mono">${p.stock_quantity} left</span>
+        </div>
+      `).join('');
+    }
+
+    // ================================================================
+    // VIEW LOGIC: 5. INVENTORY MANAGER
+    // ================================================================
+    let invStockTab = 'all';
+    function setInvTab(t) {
+      invStockTab = t;
+      ['all', 'in', 'low', 'out'].forEach(x => {
+        document.getElementById(`inv-tab-${x}`).className = x === t ? 'px-3 py-1.5 rounded-lg bg-white text-indigo-600 shadow-sm transition' : 'px-3 py-1.5 rounded-lg text-slate-600 transition';
+      });
+      renderInventory();
+    }
+
+    function renderInventory() {
+      const prods = getStored('products', []);
+      const cats = [...new Set(prods.map(p => p.category))];
+      const filterSelect = document.getElementById('invCategoryFilter');
+      const curCat = filterSelect.value;
+      filterSelect.innerHTML = '<option value="">All Categories</option>' + cats.map(c => `<option value="${c}" ${c === curCat ? 'selected' : ''}>${c}</option>`).join('');
+
+      const search = (document.getElementById('invSearchInput').value || '').toLowerCase();
+      const filtered = prods.filter(p => {
+        const mSearch = p.name.toLowerCase().includes(search);
+        const mCat = !filterSelect.value || p.category === filterSelect.value;
+        let mStock = true;
+        if (invStockTab === 'in') mStock = p.stock_quantity > 10;
+        else if (invStockTab === 'low') mStock = p.stock_quantity > 0 && p.stock_quantity <= 10;
+        else if (invStockTab === 'out') mStock = p.stock_quantity <= 0;
+        return mSearch && mCat && mStock;
+      });
+
+      const tbody = document.getElementById('inventoryTableBody');
+      if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-slate-400">No matching products found.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(p => {
+        let badge = '<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-bold uppercase text-[10px]">In Stock</span>';
+        if (p.stock_quantity <= 0) badge = '<span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 font-bold uppercase text-[10px]">Out of Stock</span>';
+        else if (p.stock_quantity <= 10) badge = `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-bold uppercase text-[10px]">Low (${p.stock_quantity})</span>`;
+
+        return `
+          <tr class="hover:bg-slate-50">
+            <td class="py-3 px-4"><div class="font-bold text-slate-800">${p.name}</div><div class="text-[11px] text-slate-400 line-clamp-1">${p.description}</div></td>
+            <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-medium text-[11px]">${p.category}</span></td>
+            <td class="py-3 px-4 font-bold text-slate-800 font-mono">$${p.price.toFixed(2)}</td>
+            <td class="py-3 px-4 font-mono font-bold text-slate-800">${p.stock_quantity}</td>
+            <td class="py-3 px-4">${badge}</td>
+            <td class="py-3 px-4 text-right">
+              <div class="inline-flex items-center gap-1.5">
+                <button onclick="quickStockAdjust(${p.id}, 10)" title="Add 10 units" class="px-2 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-md font-bold text-[11px]">+10</button>
+                <button onclick="quickStockAdjust(${p.id}, -5)" title="Deduct 5 units" class="px-2 py-1 bg-rose-50 text-rose-700 hover:bg-rose-100 rounded-md font-bold text-[11px]">-5</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function quickStockAdjust(prodId, delta) {
+      let prods = getStored('products', []);
+      const p = prods.find(x => x.id === prodId);
+      if (!p) return;
+      if (p.stock_quantity + delta < 0) { showToast('Stock cannot drop below 0.', 'warning'); return; }
+      p.stock_quantity += delta;
+      setStored('products', prods);
+      showToast(`Stock updated for ${p.name} (${delta > 0 ? '+' : ''}${delta})`, 'success');
+      renderInventory();
+    }
+
+    function handleAddProductSubmit(e) {
+      e.preventDefault();
+      let prods = getStored('products', []);
+      const newId = prods.length ? Math.max(...prods.map(p => p.id)) + 1 : 1;
+      const newP = {
+        id: newId,
+        name: document.getElementById('newProdName').value,
+        category: document.getElementById('newProdCategory').value || 'General',
+        price: parseFloat(document.getElementById('newProdPrice').value),
+        stock_quantity: parseInt(document.getElementById('newProdStock').value, 10),
+        description: document.getElementById('newProdDesc').value
+      };
+      prods.push(newP);
+      setStored('products', prods);
+      closeModal('modalAddProduct');
+      e.target.reset();
+      showToast(`Product "${newP.name}" created!`, 'success');
+      renderInventory();
+    }
+
+    // ================================================================
+    // VIEW LOGIC: 6. ORDERS PIPELINE
+    // ================================================================
+    let orderActiveFilter = 'all';
+    function setOrderFilter(st) {
+      orderActiveFilter = st;
+      const statuses = ['all', 'pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'returned'];
+      statuses.forEach(s => {
+        const el = document.getElementById(`ord-filter-${s}`);
+        if (el) el.className = s === st ? 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-sm transition' : 'px-3 py-1.5 rounded-lg text-slate-600 transition';
+      });
+      renderOrders();
+    }
+
+    function renderOrders() {
+      const orders = getStored('orders', []);
+      const custs = getStored('customers', []);
+      document.getElementById('ordersTotalCount').textContent = orders.length;
+
+      const filtered = orderActiveFilter === 'all' ? orders : orders.filter(o => o.status === orderActiveFilter);
+      const tbody = document.getElementById('ordersTableBody');
+      if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-slate-400">No orders found in this view.</td></tr>';
+        return;
+      }
+
+      const nextStatus = { pending: 'confirmed', confirmed: 'processing', processing: 'shipped', shipped: 'delivered' };
+
+      tbody.innerHTML = filtered.map(o => {
+        const c = custs.find(x => x.id === o.customer_id);
+        const canAdv = nextStatus[o.status];
+        const canCancel = o.status !== 'cancelled' && o.status !== 'returned' && o.status !== 'delivered';
+
+        return `
+          <tr class="hover:bg-slate-50">
+            <td class="py-3 px-4 font-mono font-bold text-indigo-600"><button onclick="viewOrderDetails(${o.id})" class="hover:underline">#${o.id}</button></td>
+            <td class="py-3 px-4"><div class="font-semibold text-slate-800">${c ? c.name : 'Cust #' + o.customer_id}</div><div class="text-[11px] text-slate-400">${c ? c.email : ''}</div></td>
+            <td class="py-3 px-4 font-mono font-bold text-slate-800">$${o.total_amount.toFixed(2)}</td>
+            <td class="py-3 px-4"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700">${o.status}</span></td>
+            <td class="py-3 px-4 text-slate-400 font-mono text-[11px]">${new Date(o.created_at).toLocaleDateString()}</td>
+            <td class="py-3 px-4 text-right">
+              <div class="inline-flex items-center gap-1.5">
+                ${canAdv ? `<button onclick="advanceOrderStatus(${o.id}, '${canAdv}')" class="px-2.5 py-1 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-md font-semibold text-[11px]">${canAdv} &rarr;</button>` : ''}
+                ${canCancel ? `<button onclick="cancelOrderPrompt(${o.id})" title="Cancel & restore stock" class="px-2 py-1 bg-rose-50 text-rose-700 hover:bg-rose-100 rounded-md font-semibold text-[11px]"><i class="fa-solid fa-ban"></i></button>` : ''}
+                <button onclick="viewOrderDetails(${o.id})" title="View Details" class="px-2 py-1 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-md font-semibold text-[11px]"><i class="fa-solid fa-eye"></i></button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function advanceOrderStatus(orderId, st) {
+      let orders = getStored('orders', []);
+      const o = orders.find(x => x.id === orderId);
+      if (!o) return;
+      o.status = st;
+      setStored('orders', orders);
+      showToast(`Order #${orderId} advanced to '${st}'`, 'success');
+      renderOrders();
+    }
+
+    function cancelOrderPrompt(orderId) {
+      if (!confirm(`Cancel Order #${orderId}? Stock for all line items will be returned to inventory.`)) return;
+
+      let orders = getStored('orders', []);
+      const o = orders.find(x => x.id === orderId);
+      if (!o) return;
+
+      // Restore stock
+      let prods = getStored('products', []);
+      for (const item of (o.items || [])) {
+        const p = prods.find(x => x.id === item.product_id);
+        if (p) p.stock_quantity += item.quantity;
+      }
+      setStored('products', prods);
+
+      o.status = 'cancelled';
+      setStored('orders', orders);
+      showToast(`Order #${orderId} cancelled & inventory restored!`, 'success');
+      renderOrders();
+    }
+
+    function viewOrderDetails(orderId) {
+      const orders = getStored('orders', []);
+      const custs = getStored('customers', []);
+      const o = orders.find(x => x.id === orderId);
+      if (!o) return;
+
+      document.getElementById('viewOrderTitle').textContent = `Order #${o.id} Details`;
+      document.getElementById('viewOrderDate').textContent = `Placed on ${new Date(o.created_at).toLocaleString()}`;
+      const c = custs.find(x => x.id === o.customer_id);
+      document.getElementById('viewOrderCustDetails').innerHTML = c ? `
+        <div class="font-bold text-slate-800">${c.name} &bull; ${c.email}</div>
+        <div class="text-slate-400">${o.notes || c.address || 'Standard Delivery'}</div>
+      ` : `Customer #${o.customer_id}`;
+
+      document.getElementById('viewOrderItemsBody').innerHTML = (o.items || []).map(i => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-2 px-3 font-semibold text-slate-800">${i.name}</td>
+          <td class="py-2 px-3 font-mono">$${i.unit_price.toFixed(2)}</td>
+          <td class="py-2 px-3 font-bold font-mono">${i.quantity}</td>
+          <td class="py-2 px-3 text-right font-mono font-bold">$${i.subtotal.toFixed(2)}</td>
+        </tr>
+      `).join('');
+      document.getElementById('viewOrderTotalAmount').textContent = `$${o.total_amount.toFixed(2)}`;
+      openModal('modalViewOrder');
+    }
+
+    function openModalCreateOrder() {
+      const custs = getStored('customers', []);
+      const sel = document.getElementById('modalOrderCustSelect');
+      sel.innerHTML = custs.map(c => `<option value="${c.id}">${c.name} (${c.email})</option>`).join('');
+      document.getElementById('modalOrderItemsRows').innerHTML = '';
+      addModalOrderItemRow();
+      openModal('modalCreateOrder');
+    }
+
+    function addModalOrderItemRow() {
+      const container = document.getElementById('modalOrderItemsRows');
+      const prods = getStored('products', []);
+      const rowId = 'row-' + Date.now() + Math.random().toString().slice(2, 6);
+      const row = document.createElement('div');
+      row.id = rowId;
+      row.className = 'flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200/60';
+      row.innerHTML = `
+        <select onchange="recalcModalOrderTotal()" class="modal-item-select flex-1 px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs">
+          ${prods.map(p => `<option value="${p.id}" data-price="${p.price}">${p.name} ($${p.price.toFixed(2)} | Stock: ${p.stock_quantity})</option>`).join('')}
+        </select>
+        <input type="number" min="1" value="1" oninput="recalcModalOrderTotal()" class="modal-item-qty w-16 px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono">
+        <span class="modal-item-line-total text-xs font-mono font-bold text-slate-700 w-16 text-right">$0.00</span>
+        <button type="button" onclick="document.getElementById('${rowId}').remove(); recalcModalOrderTotal()" class="text-slate-400 hover:text-rose-500 p-1"><i class="fa-solid fa-trash-can"></i></button>
+      `;
+      container.appendChild(row);
+      recalcModalOrderTotal();
+    }
+
+    function recalcModalOrderTotal() {
+      let sum = 0;
+      document.querySelectorAll('#modalOrderItemsRows > div').forEach(row => {
+        const sel = row.querySelector('.modal-item-select');
+        const qtyIn = row.querySelector('.modal-item-qty');
+        const totalSpan = row.querySelector('.modal-item-line-total');
+        const opt = sel.options[sel.selectedIndex];
+        const price = opt ? parseFloat(opt.dataset.price) : 0;
+        const q = parseInt(qtyIn.value, 10) || 0;
+        const line = price * q;
+        totalSpan.textContent = '$' + line.toFixed(2);
+        sum += line;
+      });
+      document.getElementById('modalOrderEstimatedTotal').textContent = '$' + sum.toFixed(2);
+    }
+
+    function handleModalCreateOrderSubmit(e) {
+      e.preventDefault();
+      const custId = parseInt(document.getElementById('modalOrderCustSelect').value, 10);
+      const notes = document.getElementById('modalOrderNotes').value;
+      const rows = document.querySelectorAll('#modalOrderItemsRows > div');
+      if (!rows.length) { showToast('Add at least one item', 'warning'); return; }
+
+      let prods = getStored('products', []);
+      const itemsToBuy = [];
+      for (const row of rows) {
+        const sel = row.querySelector('.modal-item-select');
+        const q = parseInt(row.querySelector('.modal-item-qty').value, 10);
+        const pId = parseInt(sel.value, 10);
+        const p = prods.find(x => x.id === pId);
+        if (!p || p.stock_quantity < q) {
+          showToast(`Insufficient stock for product #${pId}`, 'error');
+          return;
+        }
+        itemsToBuy.push({ product: p, qty: q });
+      }
+
+      // Deduct stock
+      let total = 0;
+      const orderItems = [];
+      for (const item of itemsToBuy) {
+        item.product.stock_quantity -= item.qty;
+        const sub = item.product.price * item.qty;
+        total += sub;
+        orderItems.push({
+          product_id: item.product.id,
+          name: item.product.name,
+          quantity: item.qty,
+          unit_price: item.product.price,
+          subtotal: sub
+        });
+      }
+      setStored('products', prods);
+
+      let orders = getStored('orders', []);
+      const newId = orders.length ? Math.max(...orders.map(o => o.id)) + 1 : 1;
+      orders.unshift({
+        id: newId,
+        customer_id: custId,
+        status: "confirmed",
+        total_amount: Math.round(total * 100) / 100,
+        notes: notes || "Direct order",
+        created_at: new Date().toISOString(),
+        items: orderItems
+      });
+      setStored('orders', orders);
+
+      closeModal('modalCreateOrder');
+      showToast(`Order #${newId} placed successfully!`, 'success');
+      renderOrders();
+    }
+
+    // ================================================================
+    // VIEW LOGIC: 7. CUSTOMERS
+    // ================================================================
+    function renderCustomers() {
+      const custs = getStored('customers', []);
+      document.getElementById('custTotalCount').textContent = custs.length;
+      const term = (document.getElementById('custSearchInput').value || '').toLowerCase();
+      const filtered = custs.filter(c => c.name.toLowerCase().includes(term) || c.email.toLowerCase().includes(term) || (c.address && c.address.toLowerCase().includes(term)));
+
+      const tbody = document.getElementById('customersTableBody');
+      if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-slate-400">No customers found.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(c => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-3 px-4"><div class="font-bold text-slate-800">${c.name}</div><div class="text-[11px] text-slate-400 font-mono">ID #${c.id}</div></td>
+          <td class="py-3 px-4"><div class="font-medium text-slate-700">${c.email}</div><div class="text-[11px] text-slate-400">${c.phone || 'No phone'}</div></td>
+          <td class="py-3 px-4 text-slate-600 text-xs max-w-xs truncate">${c.address || 'No address specified'}</td>
+          <td class="py-3 px-4 text-slate-400 font-mono text-[11px]">${new Date(c.created_at || Date.now()).toLocaleDateString()}</td>
+          <td class="py-3 px-4 text-right">
+            <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg font-semibold text-xs font-mono">Verified</span>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function handleAddCustomerSubmit(e) {
+      e.preventDefault();
+      let custs = getStored('customers', []);
+      const newId = custs.length ? Math.max(...custs.map(c => c.id)) + 1 : 1;
+      const newC = {
+        id: newId,
+        name: document.getElementById('newCustName').value,
+        email: document.getElementById('newCustEmail').value,
+        phone: document.getElementById('newCustPhone').value,
+        address: document.getElementById('newCustAddress').value,
+        created_at: new Date().toISOString()
+      };
+      custs.push(newC);
+      setStored('customers', custs);
+      closeModal('modalAddCustomer');
+      e.target.reset();
+      showToast(`Customer "${newC.name}" registered!`, 'success');
+      renderCustomers();
+    }
+
+    // ================================================================
+    // VIEW LOGIC: 8. RETURNS
+    // ================================================================
+    function renderReturns() {
+      const returns = getStored('returns', []);
+      document.getElementById('countPendingReturns').textContent = returns.filter(r => r.status === 'pending').length;
+      document.getElementById('countApprovedReturns').textContent = returns.filter(r => r.status === 'approved').length;
+      document.getElementById('countRejectedReturns').textContent = returns.filter(r => r.status === 'rejected').length;
+
+      const tbody = document.getElementById('returnsTableBody');
+      if (!returns.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-slate-400">No return requests on file.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = returns.map(r => {
+        let badge = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-100 text-amber-700">Pending</span>';
+        if (r.status === 'approved') badge = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-100 text-emerald-700">Approved & Restocked</span>';
+        else if (r.status === 'rejected') badge = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-rose-100 text-rose-700">Rejected</span>';
+
+        return `
+          <tr class="hover:bg-slate-50">
+            <td class="py-3 px-4 font-mono font-bold text-indigo-600">RMA-#${r.id}</td>
+            <td class="py-3 px-4 font-mono font-bold text-slate-800">Order #${r.order_id}</td>
+            <td class="py-3 px-4 text-slate-700 font-medium">${r.reason}</td>
+            <td class="py-3 px-4 font-mono font-bold text-slate-800">$${r.refund_amount.toFixed(2)}</td>
+            <td class="py-3 px-4">${badge}</td>
+            <td class="py-3 px-4 text-right">
+              ${r.status === 'pending' ? `
+                <div class="inline-flex items-center gap-1.5">
+                  <button onclick="approveReturnRequest(${r.id})" class="px-2.5 py-1 bg-emerald-600 text-white rounded-lg font-bold text-[11px] shadow-sm"><i class="fa-solid fa-check mr-1"></i> Approve</button>
+                  <button onclick="rejectReturnRequest(${r.id})" class="px-2.5 py-1 bg-rose-50 text-rose-700 rounded-lg font-bold text-[11px]"><i class="fa-solid fa-xmark mr-1"></i> Reject</button>
+                </div>
+              ` : `<span class="text-slate-400 font-mono text-[11px]">${new Date(r.created_at).toLocaleDateString()}</span>`}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function approveReturnRequest(retId) {
+      if (!confirm(`Approve Return #${retId}? Inventory for all items in the original order will be RESTORED.`)) return;
+
+      let returns = getStored('returns', []);
+      const r = returns.find(x => x.id === retId);
+      if (!r) return;
+
+      let orders = getStored('orders', []);
+      const o = orders.find(x => x.id === r.order_id);
+
+      if (o) {
+        let prods = getStored('products', []);
+        for (const item of (o.items || [])) {
+          const p = prods.find(x => x.id === item.product_id);
+          if (p) p.stock_quantity += item.quantity;
+        }
+        setStored('products', prods);
+        o.status = 'returned';
+        setStored('orders', orders);
+      }
+
+      r.status = 'approved';
+      setStored('returns', returns);
+      showToast('Return approved & inventory stock restored!', 'success');
+      renderReturns();
+    }
+
+    function rejectReturnRequest(retId) {
+      let returns = getStored('returns', []);
+      const r = returns.find(x => x.id === retId);
+      if (!r) return;
+      r.status = 'rejected';
+      setStored('returns', returns);
+      showToast('Return rejected.', 'warning');
+      renderReturns();
+    }
+
+    function openModalCreateReturn() {
+      const orders = getStored('orders', []).filter(o => o.status === 'delivered');
+      const sel = document.getElementById('returnDeliveredSelect');
+      if (!orders.length) {
+        sel.innerHTML = '<option value="">No delivered orders available to return</option>';
+      } else {
+        sel.innerHTML = '<option value="">Select a delivered order...</option>' + 
+          orders.map(o => `<option value="${o.id}" data-total="${o.total_amount}">Order #${o.id} ($${o.total_amount.toFixed(2)})</option>`).join('');
+      }
+      document.getElementById('returnReasonInput').value = '';
+      document.getElementById('returnRefundInput').value = '';
+      openModal('modalCreateReturn');
+    }
+
+    function updateReturnDefaultRefund() {
+      const sel = document.getElementById('returnDeliveredSelect');
+      const opt = sel.options[sel.selectedIndex];
+      if (opt && opt.dataset.total) document.getElementById('returnRefundInput').value = opt.dataset.total;
+    }
+
+    function handleModalCreateReturnSubmit(e) {
+      e.preventDefault();
+      const orderId = parseInt(document.getElementById('returnDeliveredSelect').value, 10);
+      const reason = document.getElementById('returnReasonInput').value;
+      const refund = parseFloat(document.getElementById('returnRefundInput').value);
+
+      if (!orderId) { showToast('Select an eligible order', 'warning'); return; }
+
+      let returns = getStored('returns', []);
+      const newId = returns.length ? Math.max(...returns.map(r => r.id)) + 1 : 1;
+      returns.unshift({
+        id: newId,
+        order_id: orderId,
+        reason: reason,
+        refund_amount: refund,
+        status: "pending",
+        created_at: new Date().toISOString()
+      });
+      setStored('returns', returns);
+      closeModal('modalCreateReturn');
+      showToast('RMA return request submitted!', 'success');
+      renderReturns();
+    }
+
+    // ================================================================
+    // VIEW LOGIC: 9. ANALYTICS
+    // ================================================================
+    let anValChart = null;
+    let anVolChart = null;
+
+    function renderAnalytics() {
+      const prods = getStored('products', []);
+      const cats = [...new Set(prods.map(p => p.category))];
+
+      let totalVal = 0;
+      let totalQty = 0;
+      let sumPrice = 0;
+
+      const summary = cats.map(cat => {
+        const items = prods.filter(p => p.category === cat);
+        const count = items.length;
+        const q = items.reduce((s, p) => s + p.stock_quantity, 0);
+        const val = items.reduce((s, p) => s + (p.price * p.stock_quantity), 0);
+        const avg = count ? (items.reduce((s, p) => s + p.price, 0) / count) : 0;
+
+        totalVal += val;
+        totalQty += q;
+        sumPrice += avg * count;
+
+        return { category: cat, totalItems: count, totalQuantity: q, totalStockValue: val, avgPrice: avg };
+      });
+
+      document.getElementById('analyticsTotalValuation').textContent = '$' + totalVal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('analyticsTotalCategories').textContent = cats.length;
+      document.getElementById('analyticsAvgPrice').textContent = '$' + (prods.length ? (sumPrice / prods.length).toFixed(2) : '0.00');
+
+      document.getElementById('analyticsSummaryTableBody').innerHTML = summary.map(s => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-3 px-4 font-bold text-slate-800">${s.category}</td>
+          <td class="py-3 px-4 font-mono">${s.totalItems}</td>
+          <td class="py-3 px-4 font-mono font-bold">${s.totalQuantity} units</td>
+          <td class="py-3 px-4 font-mono">$${s.avgPrice.toFixed(2)}</td>
+          <td class="py-3 px-4 font-mono font-bold text-indigo-600 text-right">$${s.totalStockValue.toFixed(2)}</td>
+        </tr>
+      `).join('');
+
+      // Charts
+      const labels = summary.map(s => s.category);
+      const vals = summary.map(s => s.totalStockValue);
+      const vols = summary.map(s => s.totalQuantity);
+
+      const ctxVal = document.getElementById('analyticsValuationChart').getContext('2d');
+      if (anValChart) anValChart.destroy();
+      anValChart = new Chart(ctxVal, {
+        type: 'bar',
+        data: { labels: labels, datasets: [{ data: vals, backgroundColor: '#10B981', borderRadius: 8 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#F1F5F9' } }, x: { grid: { display: false } } } }
+      });
+
+      const ctxVol = document.getElementById('analyticsVolumeChart').getContext('2d');
+      if (anVolChart) anVolChart.destroy();
+      anVolChart = new Chart(ctxVol, {
+        type: 'doughnut',
+        data: { labels: labels, datasets: [{ data: vols, backgroundColor: ['#6366F1', '#3B82F6', '#EC4899', '#F59E0B', '#10B981', '#8B5CF6'], borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '65%' }
+      });
+    }
+
+    // ================================================================
+    // VIEW LOGIC: 10. API DOCS
+    // ================================================================
+    let activeDocKey = 'products';
+    const docRegistry = {
+      products: { path: '/products/', desc: 'Fetches active catalogue products with real-time stock levels.' },
+      lowstock: { path: '/products/low-stock', desc: 'Queries items having stock_quantity <= 10.' },
+      summary: { path: '/products/summary', desc: 'Category-wise aggregation report with valuation.' },
+      orders: { path: '/orders/', desc: 'Fetches full orders collection and line items.' },
+      customers: { path: '/customers/', desc: 'Returns customer accounts directory.' },
+      returns: { path: '/returns/', desc: 'Returns RMA requests queue.' }
+    };
+
+    function selectDocEndpoint(key) {
+      activeDocKey = key;
+      document.getElementById('docActivePath').textContent = docRegistry[key].path;
+      document.getElementById('docActiveDesc').textContent = docRegistry[key].desc;
+      executeDocRequest();
+    }
+
+    function executeDocRequest() {
+      let data = {};
+      if (activeDocKey === 'products') data = { success: true, count: getStored('products', []).length, data: getStored('products', []) };
+      else if (activeDocKey === 'lowstock') data = { success: true, count: getStored('products', []).filter(p => p.stock_quantity <= 10).length, lowStockItems: getStored('products', []).filter(p => p.stock_quantity <= 10) };
+      else if (activeDocKey === 'orders') data = { success: true, count: getStored('orders', []).length, data: getStored('orders', []) };
+      else if (activeDocKey === 'customers') data = { success: true, count: getStored('customers', []).length, data: getStored('customers', []) };
+      else if (activeDocKey === 'returns') data = { success: true, count: getStored('returns', []).length, data: getStored('returns', []) };
+      else if (activeDocKey === 'summary') {
+        const prods = getStored('products', []);
+        const cats = [...new Set(prods.map(p => p.category))];
+        data = { success: true, categories: cats.length, summary: cats.map(c => {
+          const items = prods.filter(p => p.category === c);
+          return { category: c, totalItems: items.length, totalQuantity: items.reduce((s, p) => s + p.stock_quantity, 0), totalStockValue: items.reduce((s, p) => s + p.price * p.stock_quantity, 0) };
+        }) };
+      }
+      document.getElementById('docLatency').textContent = `Latency: ${Math.floor(Math.random() * 8) + 6}ms`;
+      document.getElementById('docResponseOutput').textContent = JSON.stringify(data, null, 2);
+    }
+
+    // Support Form
+    function handleSupportTicket(e) {
+      e.preventDefault();
+      showToast('Thank you! Support ticket submitted successfully.', 'success');
+      e.target.reset();
+    }
+
+    // INITIALIZATION
+    window.addEventListener('DOMContentLoaded', () => {
+      initStorage();
+      window.addEventListener('hashchange', handleHashChange);
+      handleHashChange();
+    });
+  </script>
+</body>
+</html>

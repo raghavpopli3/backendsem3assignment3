@@ -3,7 +3,7 @@ app.py — Flask Application Entry Point with Multi-Page Web UI & REST APIs
 """
 
 import os
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, send_from_directory
 from config import ActiveConfig
 from database import init_db
 
@@ -64,6 +64,9 @@ def create_app():
 
     # Operations & Admin Hub
     @app.route("/")
+    def index_root():
+        return send_from_directory(".", "index.html")
+
     @app.route("/dashboard")
     def dashboard_page():
         return render_template("dashboard.html", active_page="dashboard")
