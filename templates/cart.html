@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping Cart & Checkout — NexusCommerce{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div>
+    <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight flex items-center gap-2.5">
+      <span class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
+        <i class="fa-solid fa-cart-shopping"></i>
+      </span>
+      Review Cart & Direct Checkout
+    </h1>
+    <p class="text-xs text-slate-500 mt-1">Review selected items, select customer billing account, and confirm order</p>
+  </div>
+
+  <!-- Cart & Checkout Columns -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <!-- Left: Cart Items Table (7 cols) -->
+    <div class="lg:col-span-7 space-y-4">
+      <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <h2 class="text-base font-bold text-slate-800">Shopping Cart Items</h2>
+          <button onclick="clearCart()" class="text-xs text-slate-400 hover:text-rose-600 font-semibold transition">
+            <i class="fa-solid fa-trash-can mr-1"></i> Clear Cart
+          </button>
+        </div>
+
+        <div id="cartItemsList" class="divide-y divide-slate-100">
+          <!-- Dynamically populated -->
+        </div>
+
+        <div class="pt-4 flex items-center justify-between">
+          <a href="/shop" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5">
+            <i class="fa-solid fa-arrow-left text-[10px]"></i> Continue Browsing Store
+          </a>
+          <div class="text-right">
+            <span class="text-xs text-slate-400 block uppercase font-bold">Subtotal</span>
+            <span id="cartSubtotal" class="text-2xl font-extrabold text-slate-800 font-mono">$0.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Checkout Details (5 cols) -->
+    <div class="lg:col-span-5 space-y-4">
+      <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-5">
+        <h2 class="text-base font-bold text-slate-800 pb-3 border-b border-slate-100 flex items-center gap-2">
+          <i class="fa-solid fa-credit-card text-indigo-600"></i> Checkout & Delivery
+        </h2>
+
+        <form id="checkoutForm" onsubmit="handleCheckout(event)" class="space-y-4 text-xs">
+          <div>
+            <label class="block font-bold text-slate-600 uppercase mb-1">Customer Account *</label>
+            <select id="checkoutCustomer" required onchange="onCustomerSelectChange()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="">Choose registered customer...</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-600 uppercase mb-1">Shipping Destination</label>
+            <textarea id="checkoutAddress" rows="2" placeholder="Delivery street address, apartment, city, zip..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-600 uppercase mb-1">Payment Method</label>
+            <div class="grid grid-cols-3 gap-2">
+              <label class="border border-slate-200 rounded-xl p-2.5 text-center cursor-pointer hover:bg-slate-50 has-[:checked]:border-indigo-600 has-[:checked]:bg-indigo-50/50">
+                <input type="radio" name="payMethod" value="card" checked class="hidden">
+                <i class="fa-solid fa-credit-card text-indigo-600 block mb-1"></i>
+                <span class="font-bold text-[10px]">Card</span>
+              </label>
+              <label class="border border-slate-200 rounded-xl p-2.5 text-center cursor-pointer hover:bg-slate-50 has-[:checked]:border-indigo-600 has-[:checked]:bg-indigo-50/50">
+                <input type="radio" name="payMethod" value="upi" class="hidden">
+                <i class="fa-solid fa-mobile-screen-button text-indigo-600 block mb-1"></i>
+                <span class="font-bold text-[10px]">UPI / Pay</span>
+              </label>
+              <label class="border border-slate-200 rounded-xl p-2.5 text-center cursor-pointer hover:bg-slate-50 has-[:checked]:border-indigo-600 has-[:checked]:bg-indigo-50/50">
+                <input type="radio" name="payMethod" value="cod" class="hidden">
+                <i class="fa-solid fa-hand-holding-dollar text-indigo-600 block mb-1"></i>
+                <span class="font-bold text-[10px]">COD</span>
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-600 uppercase mb-1">Order Notes (Optional)</label>
+            <input type="text" id="checkoutNotes" placeholder="Delivery instructions..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+
+          <!-- Price Summary Breakdown -->
+          <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-2">
+            <div class="flex justify-between text-slate-500">
+              <span>Items Total</span>
+              <span id="breakdownSubtotal" class="font-mono font-semibold">$0.00</span>
+            </div>
+            <div class="flex justify-between text-slate-500">
+              <span>Standard Shipping</span>
+              <span class="font-mono text-emerald-600 font-bold">FREE</span>
+            </div>
+            <div class="flex justify-between text-slate-800 font-extrabold text-sm pt-2 border-t border-slate-200">
+              <span>Total Payable</span>
+              <span id="breakdownTotal" class="font-mono text-indigo-600 text-base">$0.00</span>
+            </div>
+          </div>
+
+          <button type="submit" id="placeOrderBtn" class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm shadow-lg transition-all hover:scale-102 active:scale-98 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-lock text-xs"></i> Complete Order & Reserve Stock
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Order Confirmation Modal -->
+<div id="orderSuccessModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl text-center space-y-4 border border-slate-100 animate-in zoom-in-95 duration-200">
+    <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto shadow-inner">
+      <i class="fa-solid fa-check"></i>
+    </div>
+    <div>
+      <h3 class="text-xl font-extrabold text-slate-800">Order Confirmed!</h3>
+      <p class="text-xs text-slate-500 mt-1">Thank you for your purchase. Inventory has been allocated.</p>
+    </div>
+    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 font-mono text-xs text-slate-700">
+      <span class="text-slate-400 block uppercase text-[10px] font-bold">Order Tracking ID</span>
+      <span id="confirmedOrderId" class="text-lg font-extrabold text-indigo-600">#--</span>
+    </div>
+    <div class="flex flex-col gap-2 pt-2">
+      <button onclick="goToTrackOrder()" class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-md transition">
+        Track Order Progress &rarr;
+      </button>
+      <a href="/shop" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs transition">
+        Back to Store
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let customersList = [];
+  let confirmedId = null;
+
+  function getCart() {
+    return JSON.parse(localStorage.getItem('nexus_cart') || '[]');
+  }
+
+  function saveCart(cart) {
+    localStorage.setItem('nexus_cart', JSON.stringify(cart));
+    renderCart();
+  }
+
+  function clearCart() {
+    if (confirm('Clear all items from your cart?')) {
+      localStorage.removeItem('nexus_cart');
+      renderCart();
+    }
+  }
+
+  async function loadCheckoutData() {
+    try {
+      const res = await fetch('/customers/');
+      const json = await res.json();
+      customersList = json.data || [];
+
+      const select = document.getElementById('checkoutCustomer');
+      select.innerHTML = '<option value="">Choose registered customer...</option>' + 
+        customersList.map(c => `<option value="${c.id}">${c.name} (${c.email})</option>`).join('');
+
+      renderCart();
+    } catch (e) {
+      console.error(e);
+      showToast('Error loading customer list', 'error');
+    }
+  }
+
+  function onCustomerSelectChange() {
+    const custId = parseInt(document.getElementById('checkoutCustomer').value, 10);
+    const found = customersList.find(c => c.id === custId);
+    if (found && found.address) {
+      document.getElementById('checkoutAddress').value = found.address;
+    }
+  }
+
+  function renderCart() {
+    const cart = getCart();
+    const container = document.getElementById('cartItemsList');
+    const placeBtn = document.getElementById('placeOrderBtn');
+
+    if (!cart.length) {
+      container.innerHTML = `
+        <div class="py-12 text-center space-y-3">
+          <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mx-auto">
+            <i class="fa-solid fa-basket-shopping"></i>
+          </div>
+          <p class="text-sm font-semibold text-slate-600">Your cart is currently empty</p>
+          <a href="/shop" class="inline-block px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-sm hover:bg-indigo-700 transition">
+            Start Shopping
+          </a>
+        </div>
+      `;
+      document.getElementById('cartSubtotal').textContent = '$0.00';
+      document.getElementById('breakdownSubtotal').textContent = '$0.00';
+      document.getElementById('breakdownTotal').textContent = '$0.00';
+      placeBtn.disabled = true;
+      placeBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      return;
+    }
+
+    placeBtn.disabled = false;
+    placeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+    let total = 0;
+    container.innerHTML = cart.map(item => {
+      const lineTotal = item.price * item.quantity;
+      total += lineTotal;
+
+      return `
+        <div class="py-4 flex items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-xl bg-slate-100 text-indigo-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-box"></i>
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 text-sm">${item.name}</h4>
+              <span class="text-xs text-slate-400 font-mono">$${item.price.toFixed(2)} each</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <div class="flex items-center border border-slate-200 rounded-xl overflow-hidden text-xs">
+              <button onclick="changeQty(${item.product_id}, -1)" class="px-2.5 py-1 text-slate-500 hover:bg-slate-100">-</button>
+              <span class="px-3 py-1 font-mono font-bold text-slate-800">${item.quantity}</span>
+              <button onclick="changeQty(${item.product_id}, 1)" class="px-2.5 py-1 text-slate-500 hover:bg-slate-100">+</button>
+            </div>
+            <span class="font-mono font-bold text-slate-800 text-sm w-20 text-right">$${lineTotal.toFixed(2)}</span>
+            <button onclick="removeItem(${item.product_id})" class="text-slate-300 hover:text-rose-500 p-1 transition">
+              <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    const formatted = '$' + total.toFixed(2);
+    document.getElementById('cartSubtotal').textContent = formatted;
+    document.getElementById('breakdownSubtotal').textContent = formatted;
+    document.getElementById('breakdownTotal').textContent = formatted;
+  }
+
+  function changeQty(productId, delta) {
+    let cart = getCart();
+    const item = cart.find(i => i.product_id === productId);
+    if (!item) return;
+
+    item.quantity += delta;
+    if (item.quantity <= 0) {
+      cart = cart.filter(i => i.product_id !== productId);
+    }
+    saveCart(cart);
+  }
+
+  function removeItem(productId) {
+    let cart = getCart().filter(i => i.product_id !== productId);
+    saveCart(cart);
+  }
+
+  async function handleCheckout(e) {
+    e.preventDefault();
+    const cart = getCart();
+    if (!cart.length) {
+      showToast('Cart is empty', 'warning');
+      return;
+    }
+
+    const customerId = parseInt(document.getElementById('checkoutCustomer').value, 10);
+    const notes = document.getElementById('checkoutNotes').value;
+    const address = document.getElementById('checkoutAddress').value;
+
+    const items = cart.map(item => ({
+      product_id: item.product_id,
+      quantity: item.quantity
+    }));
+
+    try {
+      const res = await fetch('/orders/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customer_id: customerId,
+          items: items,
+          notes: notes ? `${notes} (Ship to: ${address})` : `Ship to: ${address}`
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        confirmedId = data.data.id;
+        localStorage.removeItem('nexus_cart');
+        renderCart();
+        document.getElementById('confirmedOrderId').textContent = '#' + confirmedId;
+        openModal('orderSuccessModal');
+      } else {
+        showToast(data.error || 'Failed to complete order', 'error');
+      }
+    } catch (err) {
+      showToast('Connection failed', 'error');
+    }
+  }
+
+  function goToTrackOrder() {
+    if (confirmedId) {
+      window.location.href = `/track?id=${confirmedId}`;
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadCheckoutData);
+</script>
+{% endblock %}

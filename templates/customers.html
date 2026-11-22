@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block title %}Customers Directory — NexusCommerce{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight flex items-center gap-2.5">
+        <span class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+          <i class="fa-solid fa-users"></i>
+        </span>
+        Customer Relationship Management
+      </h1>
+      <p class="text-xs text-slate-500 mt-1">Manage client records, contact information, and audit lifetime order history</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="openModal('addCustomerModal')" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-md transition-all hover:scale-105">
+        <i class="fa-solid fa-user-plus"></i> Register Customer
+      </button>
+    </div>
+  </div>
+
+  <!-- Search & Statistics -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="md:col-span-3 bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm flex items-center gap-3">
+      <div class="relative flex-1">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+        <input type="text" id="custSearch" oninput="filterCustomers()" placeholder="Search by name, email, or address..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30">
+      </div>
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm flex items-center justify-between">
+      <div>
+        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Clients</p>
+        <p id="totalCustCount" class="text-2xl font-extrabold text-slate-800">--</p>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
+        <i class="fa-solid fa-address-book"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customers Table -->
+  <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead class="bg-slate-50/80 text-slate-400 uppercase text-[11px] font-semibold tracking-wider border-b border-slate-100">
+          <tr>
+            <th class="py-3 px-4">Customer Name</th>
+            <th class="py-3 px-4">Contact Info</th>
+            <th class="py-3 px-4">Shipping Address</th>
+            <th class="py-3 px-4">Registered Date</th>
+            <th class="py-3 px-4 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="customersTableBody" class="divide-y divide-slate-100 text-slate-700 text-xs">
+          <tr><td colspan="5" class="py-8 text-center text-slate-400">Loading customers...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Add Customer Modal -->
+<div id="addCustomerModal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+      <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+        <i class="fa-solid fa-user-plus text-indigo-600"></i> Register New Customer
+      </h3>
+      <button onclick="closeModal('addCustomerModal')" class="text-slate-400 hover:text-slate-600 text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <form onsubmit="handleCreateCustomer(event)" class="space-y-3.5">
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Full Name *</label>
+        <input type="text" id="custName" required placeholder="e.g. Jane Doe" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Email Address *</label>
+        <input type="email" id="custEmail" required placeholder="jane@example.com" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Phone Number</label>
+        <input type="tel" id="custPhone" placeholder="+1 (555) 234-5678" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Default Shipping Address</label>
+        <textarea id="custAddress" rows="2" placeholder="Street, City, State, ZIP..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none"></textarea>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+        <button type="button" onclick="closeModal('addCustomerModal')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition">Cancel</button>
+        <button type="submit" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md transition">Register Customer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Customer Profile & Order History Modal -->
+<div id="customerProfileModal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-100 space-y-5 max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+      <div>
+        <h3 id="profCustName" class="text-lg font-bold text-slate-800">Customer Profile</h3>
+        <p id="profCustEmail" class="text-xs text-slate-400"></p>
+      </div>
+      <button onclick="closeModal('customerProfileModal')" class="text-slate-400 hover:text-slate-600 text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Info snippet -->
+    <div class="grid grid-cols-2 gap-3 text-xs">
+      <div class="p-3 bg-slate-50 rounded-xl">
+        <span class="text-slate-400 block uppercase font-bold text-[10px]">Phone</span>
+        <span id="profCustPhone" class="font-semibold text-slate-700">-</span>
+      </div>
+      <div class="p-3 bg-slate-50 rounded-xl">
+        <span class="text-slate-400 block uppercase font-bold text-[10px]">Shipping Address</span>
+        <span id="profCustAddress" class="font-semibold text-slate-700 line-clamp-2">-</span>
+      </div>
+    </div>
+
+    <!-- Orders history table -->
+    <div>
+      <h4 class="text-xs font-bold text-slate-500 uppercase mb-2">Order History</h4>
+      <div class="border border-slate-100 rounded-xl overflow-hidden">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-semibold">
+            <tr>
+              <th class="py-2.5 px-3">Order ID</th>
+              <th class="py-2.5 px-3">Total Amount</th>
+              <th class="py-2.5 px-3">Status</th>
+              <th class="py-2.5 px-3 text-right">Date</th>
+            </tr>
+          </thead>
+          <tbody id="profCustOrdersBody" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="flex justify-end pt-2">
+      <button onclick="closeModal('customerProfileModal')" class="px-4 py-2 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition">Close</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let rawCustomers = [];
+
+  async function loadCustomers() {
+    try {
+      const res = await fetch('/customers/');
+      const json = await res.json();
+      rawCustomers = json.data || [];
+
+      document.getElementById('totalCustCount').textContent = rawCustomers.length;
+      filterCustomers();
+    } catch (e) {
+      console.error(e);
+      showToast('Failed to load customers', 'error');
+    }
+  }
+
+  function filterCustomers() {
+    const term = document.getElementById('custSearch').value.toLowerCase();
+    const filtered = rawCustomers.filter(c => 
+      c.name.toLowerCase().includes(term) || 
+      c.email.toLowerCase().includes(term) ||
+      (c.address && c.address.toLowerCase().includes(term))
+    );
+    renderCustomersTable(filtered);
+  }
+
+  function renderCustomersTable(customers) {
+    const tbody = document.getElementById('customersTableBody');
+    if (!customers.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-slate-400">No customers found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = customers.map(c => `
+      <tr class="hover:bg-slate-50 transition-colors">
+        <td class="py-3 px-4">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-xs uppercase shadow-sm">
+              ${c.name.charAt(0)}
+            </div>
+            <div>
+              <div class="font-bold text-slate-800">${c.name}</div>
+              <div class="text-[11px] text-slate-400 font-mono">ID #${c.id}</div>
+            </div>
+          </div>
+        </td>
+        <td class="py-3 px-4">
+          <div class="font-medium text-slate-700">${c.email}</div>
+          <div class="text-[11px] text-slate-400">${c.phone || 'No phone'}</div>
+        </td>
+        <td class="py-3 px-4 text-slate-600 text-xs max-w-xs truncate">${c.address || 'No address specified'}</td>
+        <td class="py-3 px-4 text-slate-400 font-mono text-[11px]">${new Date(c.created_at).toLocaleDateString()}</td>
+        <td class="py-3 px-4 text-right">
+          <button onclick="viewCustomerProfile(${c.id})" class="px-2.5 py-1 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg font-semibold text-xs transition flex items-center gap-1.5 ml-auto">
+            <i class="fa-solid fa-id-badge text-[11px]"></i> History
+          </button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  async function viewCustomerProfile(customerId) {
+    try {
+      const res = await fetch(`/customers/${customerId}`);
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        showToast('Could not load customer profile', 'error');
+        return;
+      }
+
+      const c = json.data;
+      document.getElementById('profCustName').textContent = c.name;
+      document.getElementById('profCustEmail').textContent = c.email;
+      document.getElementById('profCustPhone').textContent = c.phone || 'Not provided';
+      document.getElementById('profCustAddress').textContent = c.address || 'Not provided';
+
+      const ordersBody = document.getElementById('profCustOrdersBody');
+      const orders = c.orders || [];
+      if (!orders.length) {
+        ordersBody.innerHTML = '<tr><td colspan="4" class="py-4 text-center text-slate-400">No orders placed by this customer yet.</td></tr>';
+      } else {
+        ordersBody.innerHTML = orders.map(o => `
+          <tr class="hover:bg-slate-50">
+            <td class="py-2 px-3 font-mono font-bold text-indigo-600">#${o.id}</td>
+            <td class="py-2 px-3 font-mono font-bold text-slate-800">$${o.total_amount.toFixed(2)}</td>
+            <td class="py-2 px-3">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700">${o.status}</span>
+            </td>
+            <td class="py-2 px-3 text-right text-slate-400 font-mono text-[10px]">${new Date(o.created_at).toLocaleDateString()}</td>
+          </tr>
+        `).join('');
+      }
+
+      openModal('customerProfileModal');
+    } catch (e) {
+      showToast('Error loading profile', 'error');
+    }
+  }
+
+  async function handleCreateCustomer(e) {
+    e.preventDefault();
+    const payload = {
+      name: document.getElementById('custName').value,
+      email: document.getElementById('custEmail').value,
+      phone: document.getElementById('custPhone').value,
+      address: document.getElementById('custAddress').value
+    };
+
+    try {
+      const res = await fetch('/customers/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast(`Customer registered: ${data.data.name}`, 'success');
+        closeModal('addCustomerModal');
+        e.target.reset();
+        loadCustomers();
+      } else {
+        showToast(data.error || 'Registration failed', 'error');
+      }
+    } catch (err) {
+      showToast('Connection failed', 'error');
+    }
+  }
+
+  window.refreshPageData = loadCustomers;
+  document.addEventListener('DOMContentLoaded', loadCustomers);
+</script>
+{% endblock %}

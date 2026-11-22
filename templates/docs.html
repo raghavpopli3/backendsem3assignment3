@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Interactive API Playground — NexusCommerce{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight flex items-center gap-2.5">
+        <span class="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center text-lg">
+          <i class="fa-solid fa-code"></i>
+        </span>
+        Interactive REST API Console
+      </h1>
+      <p class="text-xs text-slate-500 mt-1">Explore, inspect, and fire live test requests directly against backend blueprints</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Left: Endpoints List (5 cols) -->
+    <div class="lg:col-span-5 space-y-3">
+      <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Available Endpoints</h3>
+        <div class="space-y-2 text-xs" id="endpointsList">
+          <!-- Products -->
+          <div onclick="selectEndpoint('getProducts')" class="endpoint-btn p-2.5 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/40 cursor-pointer transition flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded font-bold font-mono text-[10px] bg-emerald-100 text-emerald-800">GET</span>
+              <span class="font-mono text-slate-700 font-semibold">/products/</span>
+            </div>
+            <span class="text-slate-400 text-[11px]">List catalogue</span>
+          </div>
+
+          <div onclick="selectEndpoint('getLowStock')" class="endpoint-btn p-2.5 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/40 cursor-pointer transition flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded font-bold font-mono text-[10px] bg-emerald-100 text-emerald-800">GET</span>
+              <span class="font-mono text-slate-700 font-semibold">/products/low-stock</span>
+            </div>
+            <span class="text-slate-400 text-[11px]">Stock alerts</span>
+          </div>
+
+          <div onclick="selectEndpoint('getSummary')" class="endpoint-btn p-2.5 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/40 cursor-pointer transition flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded font-bold font-mono text-[10px] bg-emerald-100 text-emerald-800">GET</span>
+              <span class="font-mono text-slate-700 font-semibold">/products/summary</span>
+            </div>
+            <span class="text-slate-400 text-[11px]">Category aggregates</span>
+          </div>
+
+          <!-- Orders -->
+          <div onclick="selectEndpoint('getOrders')" class="endpoint-btn p-2.5 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/40 cursor-pointer transition flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded font-bold font-mono text-[10px] bg-emerald-100 text-emerald-800">GET</span>
+              <span class="font-mono text-slate-700 font-semibold">/orders/</span>
+            </div>
+            <span class="text-slate-400 text-[11px]">List orders</span>
+          </div>
+
+          <!-- Customers -->
+          <div onclick="selectEndpoint('getCustomers')" class="endpoint-btn p-2.5 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/40 cursor-pointer transition flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded font-bold font-mono text-[10px] bg-emerald-100 text-emerald-800">GET</span>
+              <span class="font-mono text-slate-700 font-semibold">/customers/</span>
+            </div>
+            <span class="text-slate-400 text-[11px]">All customers</span>
+          </div>
+
+          <!-- Returns -->
+          <div onclick="selectEndpoint('getReturns')" class="endpoint-btn p-2.5 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/40 cursor-pointer transition flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded font-bold font-mono text-[10px] bg-emerald-100 text-emerald-800">GET</span>
+              <span class="font-mono text-slate-700 font-semibold">/returns/</span>
+            </div>
+            <span class="text-slate-400 text-[11px]">Return queue</span>
+          </div>
+
+          <!-- Health -->
+          <div onclick="selectEndpoint('getHealth')" class="endpoint-btn p-2.5 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/40 cursor-pointer transition flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded font-bold font-mono text-[10px] bg-emerald-100 text-emerald-800">GET</span>
+              <span class="font-mono text-slate-700 font-semibold">/health</span>
+            </div>
+            <span class="text-slate-400 text-[11px]">System health</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Test Console & Response Viewer (7 cols) -->
+    <div class="lg:col-span-7 space-y-4">
+      <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div class="flex items-center gap-2">
+            <span id="activeMethod" class="px-2.5 py-1 rounded-md font-bold font-mono text-xs bg-emerald-100 text-emerald-800">GET</span>
+            <span id="activePath" class="font-mono font-bold text-slate-800 text-sm">/products/</span>
+          </div>
+          <button onclick="executeTestRequest()" id="sendReqBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-2">
+            <i class="fa-solid fa-play text-[10px]"></i> Send Request
+          </button>
+        </div>
+
+        <p id="activeDesc" class="text-xs text-slate-500">Fetches all active products in the inventory database with stock counts.</p>
+
+        <!-- Response Window -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-slate-500 uppercase tracking-wider">Live Response Payload</span>
+            <div class="flex items-center gap-3 font-mono text-[11px]">
+              <span id="respStatus" class="text-slate-400">Status: --</span>
+              <span id="respLatency" class="text-slate-400">Time: --</span>
+            </div>
+          </div>
+          <div class="relative bg-slate-900 rounded-2xl p-4 overflow-hidden border border-slate-800">
+            <button onclick="copyResponseText()" class="absolute right-3 top-3 text-slate-400 hover:text-white p-1 text-xs">
+              <i class="fa-regular fa-copy"></i>
+            </button>
+            <pre id="responseJson" class="font-mono text-xs text-emerald-400 overflow-x-auto max-h-96 scrollbar-thin">// Click 'Send Request' to test this endpoint</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const endpointRegistry = {
+    getProducts: { method: 'GET', url: '/products/', desc: 'Fetches active products, stock quantities, and categories.' },
+    getLowStock: { method: 'GET', url: '/products/low-stock', desc: 'Returns products with stock units <= 10.' },
+    getSummary: { method: 'GET', url: '/products/summary', desc: 'Returns category-wise aggregation metrics (totals, avg price, valuation).' },
+    getOrders: { method: 'GET', url: '/orders/', desc: 'Returns all orders placed in the system with totals and statuses.' },
+    getCustomers: { method: 'GET', url: '/customers/', desc: 'Fetches customer directory list.' },
+    getReturns: { method: 'GET', url: '/returns/', desc: 'Fetches all customer RMA return requests.' },
+    getHealth: { method: 'GET', url: '/health', desc: 'Returns operational status of the Flask backend API.' }
+  };
+
+  let currentKey = 'getProducts';
+
+  function selectEndpoint(key) {
+    currentKey = key;
+    const ep = endpointRegistry[key];
+    document.getElementById('activeMethod').textContent = ep.method;
+    document.getElementById('activePath').textContent = ep.url;
+    document.getElementById('activeDesc').textContent = ep.desc;
+    document.getElementById('responseJson').textContent = '// Ready to send request';
+    document.getElementById('respStatus').textContent = 'Status: --';
+    document.getElementById('respLatency').textContent = 'Time: --';
+  }
+
+  async function executeTestRequest() {
+    const ep = endpointRegistry[currentKey];
+    const btn = document.getElementById('sendReqBtn');
+    btn.disabled = true;
+    btn.classList.add('opacity-50');
+
+    const startTime = performance.now();
+    try {
+      const res = await fetch(ep.url);
+      const endTime = performance.now();
+      const latency = Math.round(endTime - startTime);
+
+      const json = await res.json();
+      document.getElementById('respStatus').innerHTML = `<span class="${res.ok ? 'text-emerald-500 font-bold' : 'text-rose-500 font-bold'}">${res.status} ${res.statusText}</span>`;
+      document.getElementById('respLatency').textContent = `${latency} ms`;
+      document.getElementById('responseJson').textContent = JSON.stringify(json, null, 2);
+    } catch (e) {
+      document.getElementById('respStatus').innerHTML = `<span class="text-rose-500 font-bold">Error</span>`;
+      document.getElementById('responseJson').textContent = JSON.stringify({ error: e.message }, null, 2);
+    } finally {
+      btn.disabled = false;
+      btn.classList.remove('opacity-50');
+    }
+  }
+
+  function copyResponseText() {
+    const text = document.getElementById('responseJson').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('Response JSON copied to clipboard', 'success');
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    selectEndpoint('getProducts');
+  });
+</script>
+{% endblock %}

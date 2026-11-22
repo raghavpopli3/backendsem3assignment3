@@ -1,0 +1,466 @@
+{% extends "base.html" %}
+
+{% block title %}Orders & Fulfillment — NexusCommerce{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight flex items-center gap-2.5">
+        <span class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg">
+          <i class="fa-solid fa-cart-shopping"></i>
+        </span>
+        Orders & Fulfillment Pipeline
+      </h1>
+      <p class="text-xs text-slate-500 mt-1">Multi-item order placement with real-time stock deductions and cancellation restoration</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="openNewOrderModal()" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-md transition-all hover:scale-105">
+        <i class="fa-solid fa-cart-plus"></i> Place New Order
+      </button>
+    </div>
+  </div>
+
+  <!-- Status Tabs Filter -->
+  <div class="bg-white rounded-2xl border border-slate-200/80 p-3 shadow-sm flex flex-wrap items-center gap-1.5 text-xs font-semibold">
+    <button onclick="setOrderStatusFilter('all')" id="order-tab-all" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-sm transition">All Orders (<span id="count-all">0</span>)</button>
+    <button onclick="setOrderStatusFilter('pending')" id="order-tab-pending" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">Pending</button>
+    <button onclick="setOrderStatusFilter('confirmed')" id="order-tab-confirmed" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">Confirmed</button>
+    <button onclick="setOrderStatusFilter('processing')" id="order-tab-processing" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">Processing</button>
+    <button onclick="setOrderStatusFilter('shipped')" id="order-tab-shipped" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">Shipped</button>
+    <button onclick="setOrderStatusFilter('delivered')" id="order-tab-delivered" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">Delivered</button>
+    <button onclick="setOrderStatusFilter('cancelled')" id="order-tab-cancelled" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">Cancelled</button>
+    <button onclick="setOrderStatusFilter('returned')" id="order-tab-returned" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">Returned</button>
+  </div>
+
+  <!-- Orders Table -->
+  <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead class="bg-slate-50/80 text-slate-400 uppercase text-[11px] font-semibold tracking-wider border-b border-slate-100">
+          <tr>
+            <th class="py-3 px-4">Order #</th>
+            <th class="py-3 px-4">Customer</th>
+            <th class="py-3 px-4">Total Amount</th>
+            <th class="py-3 px-4">Status</th>
+            <th class="py-3 px-4">Order Date</th>
+            <th class="py-3 px-4 text-right">Workflow Actions</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTableBody" class="divide-y divide-slate-100 text-slate-700 text-xs">
+          <tr><td colspan="6" class="py-8 text-center text-slate-400">Loading orders...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Place Multi-Item Order Modal -->
+<div id="newOrderModal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-100 space-y-5 max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+      <div>
+        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-cart-shopping text-indigo-600"></i> Place New Customer Order
+        </h3>
+        <p class="text-xs text-slate-400">Inventory will be atomically validated and deducted</p>
+      </div>
+      <button onclick="closeModal('newOrderModal')" class="text-slate-400 hover:text-slate-600 text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <form onsubmit="handlePlaceOrderSubmit(event)" class="space-y-4">
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Select Customer *</label>
+        <select id="newOrderCustomer" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+          <option value="">Choose an active customer...</option>
+        </select>
+      </div>
+
+      <!-- Line items builder -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="block text-xs font-bold text-slate-600 uppercase">Order Items *</label>
+          <button type="button" onclick="addOrderItemRow()" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-1">
+            <i class="fa-solid fa-plus text-[10px]"></i> Add Another Item
+          </button>
+        </div>
+
+        <div id="orderItemsContainer" class="space-y-2.5">
+          <!-- Rows will be dynamically injected here -->
+        </div>
+      </div>
+
+      <!-- Estimated Total -->
+      <div class="p-3 bg-slate-50 rounded-xl flex items-center justify-between border border-slate-200/60">
+        <span class="text-xs font-bold text-slate-500 uppercase">Estimated Total</span>
+        <span id="orderEstimatedTotal" class="text-base font-extrabold text-indigo-600">$0.00</span>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Order Notes (Optional)</label>
+        <input type="text" id="newOrderNotes" placeholder="e.g. Expedited courier, signature required" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+        <button type="button" onclick="closeModal('newOrderModal')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition">Cancel</button>
+        <button type="submit" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md transition">Confirm & Place Order</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Order Detail Modal -->
+<div id="orderDetailModal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 space-y-5 max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+      <div>
+        <h3 id="modalOrderTitle" class="text-lg font-bold text-slate-800">Order Details</h3>
+        <p id="modalOrderDate" class="text-xs text-slate-400"></p>
+      </div>
+      <button onclick="closeModal('orderDetailModal')" class="text-slate-400 hover:text-slate-600 text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Customer Card -->
+    <div id="modalOrderCustomer" class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs text-slate-600 space-y-1"></div>
+
+    <!-- Items Table -->
+    <div>
+      <h4 class="text-xs font-bold text-slate-500 uppercase mb-2">Purchased Items</h4>
+      <div class="border border-slate-100 rounded-xl overflow-hidden">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-semibold">
+            <tr>
+              <th class="py-2 px-3">Item</th>
+              <th class="py-2 px-3">Unit Price</th>
+              <th class="py-2 px-3">Qty</th>
+              <th class="py-2 px-3 text-right">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody id="modalOrderItemsBody" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+      <span class="text-xs font-bold text-slate-500 uppercase">Grand Total</span>
+      <span id="modalOrderTotal" class="text-lg font-extrabold text-indigo-600 font-mono">$0.00</span>
+    </div>
+
+    <div class="flex justify-end pt-2">
+      <button onclick="closeModal('orderDetailModal')" class="px-4 py-2 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition">Close</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let rawOrders = [];
+  let availableProducts = [];
+  let currentStatusFilter = 'all';
+
+  async function loadOrders() {
+    try {
+      const [orderRes, prodRes] = await Promise.all([
+        fetch('/orders/'),
+        fetch('/products/')
+      ]);
+      rawOrders = (await orderRes.json()).data || [];
+      availableProducts = (await prodRes.json()).data || [];
+
+      document.getElementById('count-all').textContent = rawOrders.length;
+      filterAndRenderOrders();
+    } catch (e) {
+      console.error(e);
+      showToast('Failed to load orders', 'error');
+    }
+  }
+
+  function setOrderStatusFilter(status) {
+    currentStatusFilter = status;
+    const statuses = ['all', 'pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'returned'];
+    statuses.forEach(s => {
+      const btn = document.getElementById(`order-tab-${s}`);
+      if (!btn) return;
+      if (s === status) {
+        btn.className = 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-sm transition';
+      } else {
+        btn.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition';
+      }
+    });
+    filterAndRenderOrders();
+  }
+
+  function filterAndRenderOrders() {
+    let filtered = rawOrders;
+    if (currentStatusFilter !== 'all') {
+      filtered = rawOrders.filter(o => o.status === currentStatusFilter);
+    }
+    renderOrdersTable(filtered);
+  }
+
+  function renderOrdersTable(orders) {
+    const tbody = document.getElementById('ordersTableBody');
+    if (!orders.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-slate-400">No orders found in this view.</td></tr>';
+      return;
+    }
+
+    const statusPill = (status) => {
+      const map = {
+        pending: 'bg-amber-100 text-amber-700',
+        confirmed: 'bg-blue-100 text-blue-700',
+        processing: 'bg-purple-100 text-purple-700',
+        shipped: 'bg-cyan-100 text-cyan-700',
+        delivered: 'bg-emerald-100 text-emerald-700',
+        cancelled: 'bg-rose-100 text-rose-700',
+        returned: 'bg-slate-100 text-slate-700'
+      };
+      return `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${map[status] || 'bg-slate-100 text-slate-700'}">${status}</span>`;
+    };
+
+    const nextStatus = {
+      pending: 'confirmed',
+      confirmed: 'processing',
+      processing: 'shipped',
+      shipped: 'delivered'
+    };
+
+    tbody.innerHTML = orders.map(o => {
+      const canAdvance = nextStatus[o.status];
+      const canCancel = o.status !== 'cancelled' && o.status !== 'returned' && o.status !== 'delivered';
+
+      return `
+        <tr class="hover:bg-slate-50 transition-colors">
+          <td class="py-3 px-4 font-mono font-bold text-indigo-600">
+            <button onclick="viewOrderDetail(${o.id})" class="hover:underline flex items-center gap-1">
+              #${o.id} <i class="fa-solid fa-arrow-up-right-from-square text-[9px] text-slate-400"></i>
+            </button>
+          </td>
+          <td class="py-3 px-4">
+            <div class="font-semibold text-slate-800">${o.customer ? o.customer.name : 'Cust #' + o.customer_id}</div>
+            <div class="text-[11px] text-slate-400">${o.customer ? o.customer.email : ''}</div>
+          </td>
+          <td class="py-3 px-4 font-mono font-bold text-slate-800">$${o.total_amount.toFixed(2)}</td>
+          <td class="py-3 px-4">${statusPill(o.status)}</td>
+          <td class="py-3 px-4 text-slate-400 font-mono text-[11px]">${new Date(o.created_at).toLocaleDateString()}</td>
+          <td class="py-3 px-4 text-right">
+            <div class="inline-flex items-center gap-1.5">
+              ${canAdvance ? `
+                <button onclick="advanceOrderStatus(${o.id}, '${canAdvance}')" class="px-2.5 py-1 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-md font-semibold text-[11px] transition flex items-center gap-1">
+                  <span>${canAdvance}</span> <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                </button>
+              ` : ''}
+              ${canCancel ? `
+                <button onclick="cancelOrder(${o.id})" title="Cancel Order & Restore Stock" class="px-2 py-1 bg-rose-50 text-rose-700 hover:bg-rose-100 rounded-md font-semibold text-[11px] transition">
+                  <i class="fa-solid fa-ban"></i>
+                </button>
+              ` : ''}
+              <button onclick="viewOrderDetail(${o.id})" title="View Details" class="px-2 py-1 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-md font-semibold text-[11px] transition">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  async function advanceOrderStatus(orderId, newStatus) {
+    try {
+      const res = await fetch(`/orders/${orderId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast(`Order #${orderId} moved to '${newStatus}'`, 'success');
+        loadOrders();
+      } else {
+        showToast(data.error || 'Failed to update order status', 'error');
+      }
+    } catch (e) {
+      showToast('Connection error', 'error');
+    }
+  }
+
+  async function cancelOrder(orderId) {
+    if (!confirm(`Are you sure you want to cancel Order #${orderId}? Stock for all purchased items will be returned to inventory.`)) return;
+
+    try {
+      const res = await fetch(`/orders/${orderId}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast(`Order #${orderId} cancelled & inventory restored!`, 'success');
+        loadOrders();
+      } else {
+        showToast(data.error || 'Failed to cancel order', 'error');
+      }
+    } catch (e) {
+      showToast('Connection error', 'error');
+    }
+  }
+
+  async function viewOrderDetail(orderId) {
+    try {
+      const res = await fetch(`/orders/${orderId}`);
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        showToast('Could not load order details', 'error');
+        return;
+      }
+      const o = data.data;
+      document.getElementById('modalOrderTitle').textContent = `Order #${o.id} Details`;
+      document.getElementById('modalOrderDate').textContent = `Placed on ${new Date(o.created_at).toLocaleString()}`;
+      
+      const custHtml = o.customer ? `
+        <div class="font-bold text-slate-800">${o.customer.name}</div>
+        <div>${o.customer.email} &bull; ${o.customer.phone || 'No phone'}</div>
+        <div class="text-slate-400">${o.customer.address || 'No shipping address provided'}</div>
+      ` : `Customer #${o.customer_id}`;
+      document.getElementById('modalOrderCustomer').innerHTML = custHtml;
+
+      const itemsBody = document.getElementById('modalOrderItemsBody');
+      itemsBody.innerHTML = (o.items || []).map(item => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-2 px-3 font-semibold text-slate-800">${item.product ? item.product.name : 'Product #' + item.product_id}</td>
+          <td class="py-2 px-3 font-mono">$${item.unit_price.toFixed(2)}</td>
+          <td class="py-2 px-3 font-mono font-bold">${item.quantity}</td>
+          <td class="py-2 px-3 font-mono font-bold text-slate-800 text-right">$${item.subtotal.toFixed(2)}</td>
+        </tr>
+      `).join('');
+
+      document.getElementById('modalOrderTotal').textContent = `$${o.total_amount.toFixed(2)}`;
+      openModal('orderDetailModal');
+    } catch (e) {
+      showToast('Error loading details', 'error');
+    }
+  }
+
+  async function openNewOrderModal() {
+    try {
+      const [custRes, prodRes] = await Promise.all([
+        fetch('/customers/'),
+        fetch('/products/')
+      ]);
+      const customers = (await custRes.json()).data || [];
+      availableProducts = (await prodRes.json()).data || [];
+
+      const select = document.getElementById('newOrderCustomer');
+      select.innerHTML = '<option value="">Choose an active customer...</option>' + 
+        customers.map(c => `<option value="${c.id}">${c.name} (${c.email})</option>`).join('');
+
+      // Reset items container
+      document.getElementById('orderItemsContainer').innerHTML = '';
+      addOrderItemRow();
+      recalcOrderTotal();
+
+      openModal('newOrderModal');
+    } catch (e) {
+      showToast('Could not load options for order', 'error');
+    }
+  }
+
+  function addOrderItemRow() {
+    const container = document.getElementById('orderItemsContainer');
+    const rowId = 'row-' + Date.now() + '-' + Math.floor(Math.random() * 100);
+
+    const row = document.createElement('div');
+    row.id = rowId;
+    row.className = 'flex items-center gap-2 p-2.5 bg-slate-50 rounded-xl border border-slate-200/60';
+
+    const prodOptions = availableProducts.map(p => 
+      `<option value="${p.id}" data-price="${p.price}" data-stock="${p.stock_quantity}">
+        ${p.name} ($${p.price.toFixed(2)} | Stock: ${p.stock_quantity})
+      </option>`
+    ).join('');
+
+    row.innerHTML = `
+      <select onchange="recalcOrderTotal()" required class="item-prod-select flex-1 px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:ring-2 focus:ring-indigo-500">
+        <option value="">Select product...</option>
+        ${prodOptions}
+      </select>
+      <input type="number" min="1" value="1" oninput="recalcOrderTotal()" required class="item-qty-input w-20 px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:ring-2 focus:ring-indigo-500">
+      <span class="item-line-total text-xs font-mono font-bold text-slate-700 w-16 text-right">$0.00</span>
+      <button type="button" onclick="document.getElementById('${rowId}').remove(); recalcOrderTotal()" class="text-slate-400 hover:text-rose-500 p-1">
+        <i class="fa-solid fa-trash-can text-xs"></i>
+      </button>
+    `;
+
+    container.appendChild(row);
+  }
+
+  function recalcOrderTotal() {
+    let grandTotal = 0;
+    const rows = document.querySelectorAll('#orderItemsContainer > div');
+    rows.forEach(row => {
+      const select = row.querySelector('.item-prod-select');
+      const qtyInput = row.querySelector('.item-qty-input');
+      const totalSpan = row.querySelector('.item-line-total');
+
+      const selectedOption = select.options[select.selectedIndex];
+      const price = selectedOption && selectedOption.dataset.price ? parseFloat(selectedOption.dataset.price) : 0;
+      const qty = parseInt(qtyInput.value, 10) || 0;
+      const lineSubtotal = price * qty;
+
+      totalSpan.textContent = '$' + lineSubtotal.toFixed(2);
+      grandTotal += lineSubtotal;
+    });
+
+    document.getElementById('orderEstimatedTotal').textContent = '$' + grandTotal.toFixed(2);
+  }
+
+  async function handlePlaceOrderSubmit(e) {
+    e.preventDefault();
+    const customerId = parseInt(document.getElementById('newOrderCustomer').value, 10);
+    const notes = document.getElementById('newOrderNotes').value;
+
+    const items = [];
+    const rows = document.querySelectorAll('#orderItemsContainer > div');
+    for (const row of rows) {
+      const select = row.querySelector('.item-prod-select');
+      const qtyInput = row.querySelector('.item-qty-input');
+      const prodId = parseInt(select.value, 10);
+      const qty = parseInt(qtyInput.value, 10);
+
+      if (!prodId) {
+        showToast('Please select a product for all rows', 'warning');
+        return;
+      }
+      items.push({ product_id: prodId, quantity: qty });
+    }
+
+    if (!items.length) {
+      showToast('Please add at least one product to the order', 'warning');
+      return;
+    }
+
+    try {
+      const res = await fetch('/orders/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customer_id: customerId, items: items, notes: notes })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast(`Order #${data.data.id} placed! Inventory updated.`, 'success');
+        closeModal('newOrderModal');
+        loadOrders();
+      } else {
+        showToast(data.error || 'Failed to place order', 'error');
+      }
+    } catch (err) {
+      showToast('Connection failed', 'error');
+    }
+  }
+
+  window.refreshPageData = loadOrders;
+  document.addEventListener('DOMContentLoaded', loadOrders);
+</script>
+{% endblock %}

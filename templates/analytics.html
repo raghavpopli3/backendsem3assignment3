@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics & Valuation — NexusCommerce{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight flex items-center gap-2.5">
+        <span class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+          <i class="fa-solid fa-chart-pie"></i>
+        </span>
+        Inventory Analytics & Category Valuation
+      </h1>
+      <p class="text-xs text-slate-500 mt-1">Aggregated metrics, valuation breakdown, and critical stock depletion forecasts</p>
+    </div>
+  </div>
+
+  <!-- Portfolio Financial Overview Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Warehouse Valuation</p>
+      <h3 id="statTotalValuation" class="text-3xl font-extrabold text-slate-800 mt-2">--</h3>
+      <p class="text-xs text-slate-400 mt-1">Sum of (Price &times; Units in Stock)</p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Product Categories</p>
+      <h3 id="statTotalCategories" class="text-3xl font-extrabold text-indigo-600 mt-2">--</h3>
+      <p class="text-xs text-slate-400 mt-1">Active departmental classifications</p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Portfolio Average Unit Price</p>
+      <h3 id="statAvgUnitPrice" class="text-3xl font-extrabold text-emerald-600 mt-2">--</h3>
+      <p class="text-xs text-slate-400 mt-1">Mean listing price per unit</p>
+    </div>
+  </div>
+
+  <!-- Chart Visualizations -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
+      <div class="mb-4 pb-2 border-b border-slate-100">
+        <h3 class="text-base font-bold text-slate-800">Inventory Valuation by Category ($)</h3>
+        <p class="text-xs text-slate-400">Total capital committed per category</p>
+      </div>
+      <div class="h-64 relative">
+        <canvas id="valuationBarChart"></canvas>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
+      <div class="mb-4 pb-2 border-b border-slate-100">
+        <h3 class="text-base font-bold text-slate-800">Stock Volume Share</h3>
+        <p class="text-xs text-slate-400">Proportion of physical inventory units</p>
+      </div>
+      <div class="h-64 relative flex items-center justify-center">
+        <canvas id="volumeDoughnutChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Summary Aggregation Table -->
+  <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+      <div>
+        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-layer-group text-indigo-600"></i> Category Aggregation Report
+        </h2>
+        <p class="text-xs text-slate-400">SQL multi-field aggregation grouped by department</p>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead class="bg-slate-50 text-slate-400 uppercase text-[11px] font-semibold tracking-wider">
+          <tr>
+            <th class="py-3 px-4 rounded-l-lg">Category</th>
+            <th class="py-3 px-4">Unique Items</th>
+            <th class="py-3 px-4">Total Quantity</th>
+            <th class="py-3 px-4">Average Price</th>
+            <th class="py-3 px-4 rounded-r-lg text-right">Total Stock Value</th>
+          </tr>
+        </thead>
+        <tbody id="summaryTableBody" class="divide-y divide-slate-100 text-slate-700 text-xs">
+          <tr><td colspan="5" class="py-6 text-center text-slate-400">Computing analytics...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Critical Low Stock Report -->
+  <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+      <div>
+        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-triangle-exclamation text-amber-500"></i> Low-Stock Replenishment Queue (&le; 10 Units)
+        </h2>
+        <p class="text-xs text-slate-400">Items nearing stockout threshold requiring immediate purchase orders</p>
+      </div>
+      <a href="/inventory" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">Catalogue &rarr;</a>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead class="bg-slate-50 text-slate-400 uppercase text-[11px] font-semibold tracking-wider">
+          <tr>
+            <th class="py-3 px-4 rounded-l-lg">Product Name</th>
+            <th class="py-3 px-4">Category</th>
+            <th class="py-3 px-4">Price</th>
+            <th class="py-3 px-4">Current Stock</th>
+            <th class="py-3 px-4 rounded-r-lg text-right">Urgency</th>
+          </tr>
+        </thead>
+        <tbody id="lowStockReportBody" class="divide-y divide-slate-100 text-slate-700 text-xs">
+          <tr><td colspan="5" class="py-6 text-center text-slate-400">Evaluating inventory safety levels...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let valChart = null;
+  let volChart = null;
+
+  async function loadAnalytics() {
+    try {
+      const [sumRes, lowRes] = await Promise.all([
+        fetch('/products/summary'),
+        fetch('/products/low-stock')
+      ]);
+
+      const summary = (await sumRes.json()).summary || [];
+      const lowStock = (await lowRes.json()).lowStockItems || [];
+
+      // Computations
+      const totalValuation = summary.reduce((sum, s) => sum + (s.totalStockValue || 0), 0);
+      const totalUnits = summary.reduce((sum, s) => sum + (s.totalQuantity || 0), 0);
+      const totalUniqueItems = summary.reduce((sum, s) => sum + (s.totalItems || 0), 0);
+      const avgPrice = totalUniqueItems ? (summary.reduce((sum, s) => sum + (s.avgPrice * s.totalItems), 0) / totalUniqueItems) : 0;
+
+      document.getElementById('statTotalValuation').textContent = '$' + totalValuation.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('statTotalCategories').textContent = summary.length;
+      document.getElementById('statAvgUnitPrice').textContent = '$' + avgPrice.toFixed(2);
+
+      renderSummaryTable(summary);
+      renderLowStockTable(lowStock);
+      renderCharts(summary);
+    } catch (e) {
+      console.error(e);
+      showToast('Error loading analytics', 'error');
+    }
+  }
+
+  function renderSummaryTable(summary) {
+    const tbody = document.getElementById('summaryTableBody');
+    if (!summary.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-slate-400">No category data found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = summary.map(s => `
+      <tr class="hover:bg-slate-50 transition-colors">
+        <td class="py-3 px-4 font-bold text-slate-800">${s.category}</td>
+        <td class="py-3 px-4 font-mono font-medium">${s.totalItems} product(s)</td>
+        <td class="py-3 px-4 font-mono font-semibold">${s.totalQuantity} units</td>
+        <td class="py-3 px-4 font-mono text-slate-600">$${s.avgPrice.toFixed(2)}</td>
+        <td class="py-3 px-4 font-mono font-extrabold text-indigo-600 text-right">$${s.totalStockValue.toFixed(2)}</td>
+      </tr>
+    `).join('');
+  }
+
+  function renderLowStockTable(items) {
+    const tbody = document.getElementById('lowStockReportBody');
+    if (!items.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="py-6 text-center text-slate-400"><i class="fa-solid fa-circle-check text-emerald-500 mr-1.5"></i> All products are adequately stocked!</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = items.map(p => `
+      <tr class="hover:bg-slate-50 transition-colors">
+        <td class="py-3 px-4 font-bold text-slate-800">${p.name}</td>
+        <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[11px]">${p.category}</span></td>
+        <td class="py-3 px-4 font-mono">$${p.price.toFixed(2)}</td>
+        <td class="py-3 px-4 font-mono font-bold text-amber-600">${p.stock_quantity} units</td>
+        <td class="py-3 px-4 text-right">
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${p.stock_quantity <= 3 ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'}">
+            ${p.stock_quantity <= 3 ? 'Critical' : 'Reorder Soon'}
+          </span>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function renderCharts(summary) {
+    const labels = summary.map(s => s.category);
+    const valuations = summary.map(s => s.totalStockValue);
+    const volumes = summary.map(s => s.totalQuantity);
+
+    // Valuation Bar Chart
+    const ctxVal = document.getElementById('valuationBarChart').getContext('2d');
+    if (valChart) valChart.destroy();
+    valChart = new Chart(ctxVal, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Stock Value ($)',
+          data: valuations,
+          backgroundColor: '#10B981',
+          borderRadius: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#F1F5F9' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    // Volume Doughnut Chart
+    const ctxVol = document.getElementById('volumeDoughnutChart').getContext('2d');
+    if (volChart) volChart.destroy();
+    volChart = new Chart(ctxVol, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: volumes,
+          backgroundColor: ['#6366F1', '#3B82F6', '#EC4899', '#F59E0B', '#10B981', '#8B5CF6'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '65%'
+      }
+    });
+  }
+
+  window.refreshPageData = loadAnalytics;
+  document.addEventListener('DOMContentLoaded', loadAnalytics);
+</script>
+{% endblock %}

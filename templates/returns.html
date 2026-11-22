@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block title %}Returns & RMA — NexusCommerce{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight flex items-center gap-2.5">
+        <span class="w-9 h-9 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-lg">
+          <i class="fa-solid fa-arrow-rotate-left"></i>
+        </span>
+        Returns & RMA Management
+      </h1>
+      <p class="text-xs text-slate-500 mt-1">Process return requests with automatic product inventory restocking on approval</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="openNewReturnModal()" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-md transition-all hover:scale-105">
+        <i class="fa-solid fa-receipt"></i> File Return Request
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex items-center justify-between">
+      <div>
+        <p class="text-xs font-bold text-slate-400 uppercase">Pending Approvals</p>
+        <p id="countPendingReturns" class="text-2xl font-extrabold text-amber-600 mt-1">--</p>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
+        <i class="fa-solid fa-hourglass-half"></i>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex items-center justify-between">
+      <div>
+        <p class="text-xs font-bold text-slate-400 uppercase">Approved & Restocked</p>
+        <p id="countApprovedReturns" class="text-2xl font-extrabold text-emerald-600 mt-1">--</p>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+        <i class="fa-solid fa-boxes-packing"></i>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex items-center justify-between">
+      <div>
+        <p class="text-xs font-bold text-slate-400 uppercase">Rejected Returns</p>
+        <p id="countRejectedReturns" class="text-2xl font-extrabold text-slate-600 mt-1">--</p>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg">
+        <i class="fa-solid fa-circle-xmark"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Returns Table -->
+  <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead class="bg-slate-50/80 text-slate-400 uppercase text-[11px] font-semibold tracking-wider border-b border-slate-100">
+          <tr>
+            <th class="py-3 px-4">RMA ID</th>
+            <th class="py-3 px-4">Original Order</th>
+            <th class="py-3 px-4">Customer Reason</th>
+            <th class="py-3 px-4">Refund Amount</th>
+            <th class="py-3 px-4">Status</th>
+            <th class="py-3 px-4 text-right">RMA Decision</th>
+          </tr>
+        </thead>
+        <tbody id="returnsTableBody" class="divide-y divide-slate-100 text-slate-700 text-xs">
+          <tr><td colspan="6" class="py-8 text-center text-slate-400">Loading RMA queue...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- File Return Modal -->
+<div id="newReturnModal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+      <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+        <i class="fa-solid fa-receipt text-indigo-600"></i> Request Order Return
+      </h3>
+      <button onclick="closeModal('newReturnModal')" class="text-slate-400 hover:text-slate-600 text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <form onsubmit="handleCreateReturn(event)" class="space-y-3.5">
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Delivered Order *</label>
+        <select id="returnOrderSelect" required onchange="updateRefundAmountDefault()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+          <option value="">Select a delivered order...</option>
+        </select>
+        <p class="text-[11px] text-slate-400 mt-1">Only orders in 'delivered' status are eligible for returns</p>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Return Reason *</label>
+        <textarea id="returnReason" required rows="2" placeholder="e.g. Defective unit, incorrect size, or buyer remorse" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Refund Amount ($)</label>
+        <input type="number" step="0.01" min="0" id="returnRefundAmount" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+        <button type="button" onclick="closeModal('newReturnModal')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition">Cancel</button>
+        <button type="submit" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md transition">Submit RMA</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let rawReturns = [];
+  let deliveredOrders = [];
+
+  async function loadReturns() {
+    try {
+      const res = await fetch('/returns/');
+      const json = await res.json();
+      rawReturns = json.data || [];
+
+      // Counts
+      const pending = rawReturns.filter(r => r.status === 'pending').length;
+      const approved = rawReturns.filter(r => r.status === 'approved').length;
+      const rejected = rawReturns.filter(r => r.status === 'rejected').length;
+
+      document.getElementById('countPendingReturns').textContent = pending;
+      document.getElementById('countApprovedReturns').textContent = approved;
+      document.getElementById('countRejectedReturns').textContent = rejected;
+
+      renderReturnsTable(rawReturns);
+    } catch (e) {
+      console.error(e);
+      showToast('Failed to load return records', 'error');
+    }
+  }
+
+  function renderReturnsTable(returns) {
+    const tbody = document.getElementById('returnsTableBody');
+    if (!returns.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-slate-400">No return requests on file.</td></tr>';
+      return;
+    }
+
+    const statusBadge = (s) => {
+      if (s === 'pending') return '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-100 text-amber-700">Pending Review</span>';
+      if (s === 'approved') return '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-100 text-emerald-700">Approved & Restocked</span>';
+      return '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-rose-100 text-rose-700">Rejected</span>';
+    };
+
+    tbody.innerHTML = returns.map(r => `
+      <tr class="hover:bg-slate-50 transition-colors">
+        <td class="py-3 px-4 font-mono font-bold text-indigo-600">RMA-#${r.id}</td>
+        <td class="py-3 px-4 font-mono font-bold text-slate-800">
+          <a href="/orders-view" class="hover:underline">Order #${r.order_id}</a>
+        </td>
+        <td class="py-3 px-4 text-slate-700 max-w-xs font-medium">${r.reason}</td>
+        <td class="py-3 px-4 font-mono font-bold text-slate-800">$${r.refund_amount.toFixed(2)}</td>
+        <td class="py-3 px-4">${statusBadge(r.status)}</td>
+        <td class="py-3 px-4 text-right">
+          ${r.status === 'pending' ? `
+            <div class="inline-flex items-center gap-1.5">
+              <button onclick="approveReturn(${r.id})" class="px-2.5 py-1 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg font-bold text-[11px] shadow-sm transition">
+                <i class="fa-solid fa-check mr-1"></i> Approve
+              </button>
+              <button onclick="rejectReturn(${r.id})" class="px-2.5 py-1 bg-rose-50 text-rose-700 hover:bg-rose-100 rounded-lg font-bold text-[11px] transition">
+                <i class="fa-solid fa-xmark mr-1"></i> Reject
+              </button>
+            </div>
+          ` : `
+            <span class="text-slate-400 font-mono text-[11px]">${new Date(r.processed_at || r.created_at).toLocaleDateString()}</span>
+          `}
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  async function approveReturn(returnId) {
+    if (!confirm(`Approve Return #${returnId}? This will automatically RESTORE inventory for all items in the order and mark the order as returned.`)) return;
+
+    try {
+      const res = await fetch(`/returns/${returnId}/approve`, { method: 'PUT' });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast('Return approved & inventory stock restored!', 'success');
+        loadReturns();
+      } else {
+        showToast(data.error || 'Failed to approve return', 'error');
+      }
+    } catch (e) {
+      showToast('Server error', 'error');
+    }
+  }
+
+  async function rejectReturn(returnId) {
+    const reason = prompt('Optional rejection note:');
+    try {
+      const res = await fetch(`/returns/${returnId}/reject`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: reason || 'Not eligible' })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast('Return request rejected', 'warning');
+        loadReturns();
+      } else {
+        showToast(data.error || 'Failed to reject return', 'error');
+      }
+    } catch (e) {
+      showToast('Server error', 'error');
+    }
+  }
+
+  async function openNewReturnModal() {
+    try {
+      const res = await fetch('/orders/?status=delivered');
+      const json = await res.json();
+      deliveredOrders = json.data || [];
+
+      const select = document.getElementById('returnOrderSelect');
+      if (!deliveredOrders.length) {
+        select.innerHTML = '<option value="">No delivered orders available to return</option>';
+      } else {
+        select.innerHTML = '<option value="">Select a delivered order...</option>' + 
+          deliveredOrders.map(o => `
+            <option value="${o.id}" data-total="${o.total_amount}">
+              Order #${o.id} - $${o.total_amount.toFixed(2)} (${o.customer ? o.customer.name : 'Cust #' + o.customer_id})
+            </option>
+          `).join('');
+      }
+
+      document.getElementById('returnReason').value = '';
+      document.getElementById('returnRefundAmount').value = '';
+      openModal('newReturnModal');
+    } catch (e) {
+      showToast('Could not load eligible orders', 'error');
+    }
+  }
+
+  function updateRefundAmountDefault() {
+    const select = document.getElementById('returnOrderSelect');
+    const opt = select.options[select.selectedIndex];
+    if (opt && opt.dataset.total) {
+      document.getElementById('returnRefundAmount').value = parseFloat(opt.dataset.total).toFixed(2);
+    }
+  }
+
+  async function handleCreateReturn(e) {
+    e.preventDefault();
+    const orderId = parseInt(document.getElementById('returnOrderSelect').value, 10);
+    const reason = document.getElementById('returnReason').value;
+    const refund = parseFloat(document.getElementById('returnRefundAmount').value);
+
+    if (!orderId) {
+      showToast('Please select a delivered order', 'warning');
+      return;
+    }
+
+    try {
+      const res = await fetch('/returns/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: orderId, reason: reason, refund_amount: refund })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast('Return filed successfully. Pending approval.', 'success');
+        closeModal('newReturnModal');
+        loadReturns();
+      } else {
+        showToast(data.error || 'Could not file return', 'error');
+      }
+    } catch (err) {
+      showToast('Connection failed', 'error');
+    }
+  }
+
+  window.refreshPageData = loadReturns;
+  document.addEventListener('DOMContentLoaded', loadReturns);
+</script>
+{% endblock %}

@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}Track Order — NexusCommerce{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-4xl mx-auto">
+  <!-- Page Header -->
+  <div class="text-center space-y-2">
+    <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl mx-auto">
+      <i class="fa-solid fa-truck-fast"></i>
+    </div>
+    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">Package Delivery Tracker</h1>
+    <p class="text-xs sm:text-sm text-slate-500">Enter your order ID to check fulfillment pipeline, warehouse status, and delivery schedule</p>
+  </div>
+
+  <!-- Search Card -->
+  <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-sm">
+    <form onsubmit="handleSearchOrder(event)" class="flex flex-col sm:flex-row items-center gap-3">
+      <div class="relative flex-1 w-full">
+        <i class="fa-solid fa-hashtag absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+        <input type="number" min="1" id="trackInput" required placeholder="Enter Order Number (e.g. 1, 2)..." class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono">
+      </div>
+      <button type="submit" class="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold text-sm shadow-md transition flex items-center justify-center gap-2">
+        <i class="fa-solid fa-magnifying-glass text-xs"></i> Track Status
+      </button>
+    </form>
+  </div>
+
+  <!-- Result Container -->
+  <div id="trackResultContainer" class="hidden space-y-6">
+    <!-- Progress Timeline Card -->
+    <div class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm space-y-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+        <div>
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Tracking Reference</span>
+          <h2 id="trackOrderNum" class="text-xl font-extrabold text-slate-800 font-mono">Order #--</h2>
+        </div>
+        <div class="text-left sm:text-right">
+          <span class="text-xs text-slate-400 block font-medium">Placed on <span id="trackOrderDate" class="font-bold text-slate-700">--</span></span>
+          <span id="trackStatusBadge" class="inline-block mt-1"></span>
+        </div>
+      </div>
+
+      <!-- Stepper Progress Bar -->
+      <div id="stepperContainer" class="relative py-4">
+        <div class="overflow-hidden h-1.5 mb-8 text-xs flex rounded-full bg-slate-100">
+          <div id="timelineProgressBar" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-indigo-600 transition-all duration-700" style="width: 25%"></div>
+        </div>
+
+        <div class="grid grid-cols-4 gap-2 text-center text-xs">
+          <!-- Step 1 -->
+          <div id="step-pending" class="space-y-1.5">
+            <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs mx-auto shadow-md">
+              <i class="fa-solid fa-check"></i>
+            </div>
+            <p class="font-bold text-slate-800 text-[11px]">Placed</p>
+            <p class="text-[10px] text-slate-400 hidden sm:block">Inventory Reserved</p>
+          </div>
+
+          <!-- Step 2 -->
+          <div id="step-processing" class="space-y-1.5 opacity-40">
+            <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs mx-auto">
+              <i class="fa-solid fa-box"></i>
+            </div>
+            <p class="font-bold text-slate-800 text-[11px]">Processing</p>
+            <p class="text-[10px] text-slate-400 hidden sm:block">Fulfillment Hub</p>
+          </div>
+
+          <!-- Step 3 -->
+          <div id="step-shipped" class="space-y-1.5 opacity-40">
+            <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs mx-auto">
+              <i class="fa-solid fa-truck"></i>
+            </div>
+            <p class="font-bold text-slate-800 text-[11px]">Shipped</p>
+            <p class="text-[10px] text-slate-400 hidden sm:block">In Transit</p>
+          </div>
+
+          <!-- Step 4 -->
+          <div id="step-delivered" class="space-y-1.5 opacity-40">
+            <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs mx-auto">
+              <i class="fa-solid fa-house-chimney"></i>
+            </div>
+            <p class="font-bold text-slate-800 text-[11px]">Delivered</p>
+            <p class="text-[10px] text-slate-400 hidden sm:block">Completed</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cancelled or Returned banner if applicable -->
+      <div id="specialStatusBanner" class="hidden rounded-2xl p-4 text-xs font-semibold"></div>
+    </div>
+
+    <!-- Items & Shipping Overview -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-3">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Customer & Delivery Notes</h3>
+        <div id="trackCustomerInfo" class="text-xs text-slate-700 space-y-1"></div>
+      </div>
+
+      <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-3">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Package Contents</h3>
+        <div id="trackItemsList" class="divide-y divide-slate-100 text-xs"></div>
+        <div class="pt-2 flex justify-between font-bold text-slate-800">
+          <span>Total Paid</span>
+          <span id="trackTotalPaid" class="font-mono text-indigo-600 text-base">$0.00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  async function searchOrder(id) {
+    try {
+      const res = await fetch(`/orders/${id}`);
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        showToast('Order not found. Please verify the ID.', 'error');
+        return;
+      }
+      renderOrderTracking(json.data);
+    } catch (e) {
+      showToast('Could not fetch order', 'error');
+    }
+  }
+
+  function handleSearchOrder(e) {
+    e.preventDefault();
+    const id = document.getElementById('trackInput').value;
+    if (id) searchOrder(id);
+  }
+
+  function renderOrderTracking(order) {
+    document.getElementById('trackResultContainer').classList.remove('hidden');
+    document.getElementById('trackOrderNum').textContent = `Order #${order.id}`;
+    document.getElementById('trackOrderDate').textContent = new Date(order.created_at).toLocaleDateString();
+
+    const statusMap = {
+      pending: { label: 'Order Placed', color: 'bg-amber-100 text-amber-700', step: 1, pct: '15%' },
+      confirmed: { label: 'Confirmed', color: 'bg-blue-100 text-blue-700', step: 1, pct: '30%' },
+      processing: { label: 'In Fulfillment', color: 'bg-purple-100 text-purple-700', step: 2, pct: '55%' },
+      shipped: { label: 'Dispatched & In Transit', color: 'bg-cyan-100 text-cyan-700', step: 3, pct: '80%' },
+      delivered: { label: 'Delivered', color: 'bg-emerald-100 text-emerald-700', step: 4, pct: '100%' },
+      cancelled: { label: 'Cancelled', color: 'bg-rose-100 text-rose-700', step: 0, pct: '0%' },
+      returned: { label: 'Returned', color: 'bg-slate-100 text-slate-700', step: 0, pct: '0%' }
+    };
+
+    const s = statusMap[order.status] || { label: order.status, color: 'bg-slate-100', step: 1, pct: '20%' };
+    document.getElementById('trackStatusBadge').innerHTML = `<span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${s.color}">${s.label}</span>`;
+
+    // Special banner
+    const specialBanner = document.getElementById('specialStatusBanner');
+    if (order.status === 'cancelled') {
+      specialBanner.className = 'rounded-2xl p-4 text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-800 flex items-center gap-2';
+      specialBanner.innerHTML = '<i class="fa-solid fa-ban text-rose-600 text-base"></i> <span>This order was cancelled. Reserved inventory was restored to active catalogue.</span>';
+      specialBanner.classList.remove('hidden');
+    } else if (order.status === 'returned') {
+      specialBanner.className = 'rounded-2xl p-4 text-xs font-semibold bg-slate-100 border border-slate-300 text-slate-800 flex items-center gap-2';
+      specialBanner.innerHTML = '<i class="fa-solid fa-arrow-rotate-left text-slate-600 text-base"></i> <span>A return was processed and approved for this order. Stock has been credited back.</span>';
+      specialBanner.classList.remove('hidden');
+    } else {
+      specialBanner.classList.add('hidden');
+    }
+
+    // Timeline Stepper
+    document.getElementById('timelineProgressBar').style.width = s.pct;
+
+    const steps = ['pending', 'processing', 'shipped', 'delivered'];
+    steps.forEach((st, idx) => {
+      const el = document.getElementById(`step-${st}`);
+      if (idx < s.step) {
+        el.classList.remove('opacity-40');
+        el.querySelector('div').className = 'w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs mx-auto shadow-md';
+        el.querySelector('div').innerHTML = '<i class="fa-solid fa-check"></i>';
+      } else if (idx === s.step - 1) {
+        el.classList.remove('opacity-40');
+        el.querySelector('div').className = 'w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs mx-auto shadow-md animate-pulse';
+      } else {
+        el.classList.add('opacity-40');
+        el.querySelector('div').className = 'w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs mx-auto';
+      }
+    });
+
+    // Customer Info
+    const c = order.customer;
+    document.getElementById('trackCustomerInfo').innerHTML = c ? `
+      <div class="font-bold text-slate-800">${c.name}</div>
+      <div class="text-slate-500">${c.email} &bull; ${c.phone || 'No phone'}</div>
+      <div class="mt-2 text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100 font-mono text-[11px]">${order.notes || c.address || 'Standard Delivery'}</div>
+    ` : `Customer ID #${order.customer_id}`;
+
+    // Items List
+    const itemsList = document.getElementById('trackItemsList');
+    itemsList.innerHTML = (order.items || []).map(item => `
+      <div class="py-2.5 flex items-center justify-between">
+        <div>
+          <span class="font-bold text-slate-800">${item.product ? item.product.name : 'Item #' + item.product_id}</span>
+          <span class="text-slate-400 block text-[11px]">Qty: ${item.quantity} &times; $${item.unit_price.toFixed(2)}</span>
+        </div>
+        <span class="font-mono font-bold text-slate-800">$${item.subtotal.toFixed(2)}</span>
+      </div>
+    `).join('');
+
+    document.getElementById('trackTotalPaid').textContent = `$${order.total_amount.toFixed(2)}`;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    if (id) {
+      document.getElementById('trackInput').value = id;
+      searchOrder(id);
+    }
+  });
+</script>
+{% endblock %}
