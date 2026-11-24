@@ -1,0 +1,527 @@
+{
+  "info": {
+    "_postman_id": "b3e7a1a0-4122-4917-a000-nexuscommerce-v3",
+    "name": "NexusCommerce — Inventory & Order REST API Collection",
+    "description": "Complete Postman Collection for testing all REST endpoints of the NexusCommerce E-Commerce Management Platform (Flask + SQLAlchemy/MongoDB). Includes products catalog, low-stock reports, MongoDB category aggregation, customers CRM, atomic order placement, stock deductions, and RMA returns.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5001",
+      "type": "string"
+    },
+    {
+      "key": "productId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "customerId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "orderId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "returnId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. System Diagnostics & Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Verify that the backend web server is online and operational."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Server reports healthy', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "MongoDB Cluster Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/mongodb/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "mongodb", "status"]
+            },
+            "description": "Checks connectivity to MongoDB cluster specified in MONGO_URI."
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Products & Inventory",
+      "item": [
+        {
+          "name": "List All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/",
+              "host": ["{{baseUrl}}"],
+              "path": ["products", ""]
+            },
+            "description": "Returns all active catalogue products with real-time stock levels."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns list of products', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filter Products by Category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/?category=Electronics",
+              "host": ["{{baseUrl}}"],
+              "path": ["products", ""],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "Electronics"
+                }
+              ]
+            },
+            "description": "Filter catalogue items by category query parameter."
+          }
+        },
+        {
+          "name": "Get Single Product by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["products", "{{productId}}"]
+            },
+            "description": "Retrieve detailed information for a single product."
+          }
+        },
+        {
+          "name": "Low Stock Report (<= 10 Units)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/low-stock?threshold=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["products", "low-stock"],
+              "query": [
+                {
+                  "key": "threshold",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Assignment 3 requirement: returns products below or equal to reorder threshold."
+          }
+        },
+        {
+          "name": "Category Summary Aggregation",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["products", "summary"]
+            },
+            "description": "Assignment 3 MongoDB Aggregation requirement: groups by category and returns totalItems, totalQuantity, totalStockValue, avgPrice."
+          }
+        },
+        {
+          "name": "Create New Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"UltraWide Curved Monitor 34\\\"\",\n  \"description\": \"144Hz WQHD curved gaming and productivity display.\",\n  \"price\": 499.99,\n  \"stock_quantity\": 18,\n  \"category\": \"Electronics\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products/",
+              "host": ["{{baseUrl}}"],
+              "path": ["products", ""]
+            },
+            "description": "Add a new product to the active catalogue."
+          }
+        },
+        {
+          "name": "Adjust Stock Quantity (+/- Change)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"change\": 10\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products/{{productId}}/stock",
+              "host": ["{{baseUrl}}"],
+              "path": ["products", "{{productId}}", "stock"]
+            },
+            "description": "Safely increment or decrement inventory units."
+          }
+        },
+        {
+          "name": "Update Product Details",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"ProBook Laptop 15 (Updated)\",\n  \"price\": 849.99,\n  \"description\": \"Upgraded 1TB NVMe SSD.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products/{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["products", "{{productId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Product (Soft Delete)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["products", "{{productId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Customers",
+      "item": [
+        {
+          "name": "List All Customers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/customers/",
+              "host": ["{{baseUrl}}"],
+              "path": ["customers", ""]
+            }
+          }
+        },
+        {
+          "name": "Get Customer by ID (With Orders History)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/customers/{{customerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["customers", "{{customerId}}"]
+            },
+            "description": "Returns customer details along with full nested order history."
+          }
+        },
+        {
+          "name": "Register New Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"David Clark\",\n  \"email\": \"david.clark@example.com\",\n  \"phone\": \"+1 (555) 789-0123\",\n  \"address\": \"742 Evergreen Terrace, Springfield, OR 97477\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/customers/",
+              "host": ["{{baseUrl}}"],
+              "path": ["customers", ""]
+            }
+          }
+        },
+        {
+          "name": "Update Customer Info",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+91 99999 00000\",\n  \"address\": \"New Street Address, Bengaluru\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/customers/{{customerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["customers", "{{customerId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Orders & Atomic Stock Deductions",
+      "item": [
+        {
+          "name": "List All Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", ""]
+            }
+          }
+        },
+        {
+          "name": "Filter Orders by Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/?status=confirmed",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", ""],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "confirmed"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Single Order with Line Items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/{{orderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "{{orderId}}"]
+            }
+          }
+        },
+        {
+          "name": "Place New Order (Atomic Stock Deduction)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_id\": 1,\n  \"items\": [\n    {\n      \"product_id\": 2,\n      \"quantity\": 1\n    },\n    {\n      \"product_id\": 4,\n      \"quantity\": 2\n    }\n  ],\n  \"notes\": \"Expedited courier shipping requested.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders/",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", ""]
+            },
+            "description": "Performs atomic stock check: verifies all item quantities first, then commits deduction."
+          }
+        },
+        {
+          "name": "Update Order Status (Advance Lifecycle)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"shipped\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders/{{orderId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "{{orderId}}", "status"]
+            },
+            "description": "Advances status: pending -> confirmed -> processing -> shipped -> delivered."
+          }
+        },
+        {
+          "name": "Cancel Order (Auto-Restores Stock)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/{{orderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "{{orderId}}"]
+            },
+            "description": "Cancels order and automatically restores stock for every line item."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Returns & RMA",
+      "item": [
+        {
+          "name": "List All Return Requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/returns/",
+              "host": ["{{baseUrl}}"],
+              "path": ["returns", ""]
+            }
+          }
+        },
+        {
+          "name": "Filter Returns by Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/returns/?status=pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["returns", ""],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "File Return Request (For Delivered Order)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": 2,\n  \"reason\": \"Defective item — audio distortion in left ear cup.\",\n  \"refund_amount\": 299.98\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/returns/",
+              "host": ["{{baseUrl}}"],
+              "path": ["returns", ""]
+            }
+          }
+        },
+        {
+          "name": "Approve Return (Restores Stock)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/returns/{{returnId}}/approve",
+              "host": ["{{baseUrl}}"],
+              "path": ["returns", "{{returnId}}", "approve"]
+            },
+            "description": "Approves return, restores physical stock units to inventory, and marks order returned."
+          }
+        },
+        {
+          "name": "Reject Return Request",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Item returned past the 30-day warranty window.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/returns/{{returnId}}/reject",
+              "host": ["{{baseUrl}}"],
+              "path": ["returns", "{{returnId}}", "reject"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

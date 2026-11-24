@@ -107,6 +107,17 @@ def create_app():
     def health_check():
         return jsonify({"success": True, "message": "Server is up and running"}), 200
 
+    @app.route("/api/mongodb/status")
+    def mongodb_status():
+        from mongo_db import check_mongo_status
+        status = check_mongo_status()
+        return jsonify(status), (200 if status.get("connected") else 503)
+
+    @app.route("/postman-collection")
+    @app.route("/api/postman")
+    def postman_collection_download():
+        return send_from_directory(".", "NexusCommerce_Postman_Collection.json", as_attachment=True)
+
     return app
 
 

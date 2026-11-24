@@ -7,6 +7,10 @@ hunting through 10 different files.
 """
 
 import os
+from dotenv import load_dotenv
+
+# Load local .env file if present
+load_dotenv()
 
 # Base directory of the project — handy for building absolute paths
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -23,14 +27,18 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-prod")
 
     # SQLite database stored right next to our code for simplicity.
-    # For production you'd swap this out for PostgreSQL or MySQL.
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "DATABASE_URL",
         f"sqlite:///{os.path.join(BASE_DIR, 'inventory.db')}"
     )
 
-    # SQLAlchemy doesn't need to track every model modification — it just
-    # adds overhead and prints annoying warnings if set to True.
+    # MongoDB Atlas or Local MongoDB Connection URI
+    # Example: mongodb+srv://<username>:<password>@cluster0.xyz.mongodb.net/?retryWrites=true&w=majority
+    # or local: mongodb://localhost:27017/inventory_db
+    MONGO_URI = os.environ.get("MONGO_URI", "")
+    MONGO_DB_NAME = os.environ.get("MONGO_DB_NAME", "inventory_db")
+
+    # SQLAlchemy doesn't need to track every model modification
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Pretty-print JSON responses so they're readable in the browser/Postman
